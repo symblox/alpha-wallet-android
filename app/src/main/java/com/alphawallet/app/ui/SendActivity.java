@@ -109,7 +109,7 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
         wallet = getIntent().getParcelableExtra(WALLET);
         token = getIntent().getParcelableExtra(C.EXTRA_TOKEN_ID);
         QRResult result = getIntent().getParcelableExtra(C.EXTRA_AMOUNT);
-        currentChain = getIntent().getIntExtra(C.EXTRA_NETWORKID, 1);
+        currentChain = getIntent().getIntExtra(C.EXTRA_NETWORKID, 106);
         myAddress = wallet.address;
 
         if (!checkTokenValidity()) { return; }

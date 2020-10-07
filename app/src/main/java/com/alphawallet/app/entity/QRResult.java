@@ -49,7 +49,7 @@ public class QRResult implements Parcelable
 
     private void defaultParams()
     {
-        chainId = 1;
+        chainId = 106;
         type = EIP681Type.ADDRESS;
         functionStr = "";
         functionDetail = "";

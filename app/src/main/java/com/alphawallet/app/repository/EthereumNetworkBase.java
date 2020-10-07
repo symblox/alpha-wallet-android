@@ -490,7 +490,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
 
     public static ContractLocator getOverrideToken()
     {
-        return new ContractLocator("", EthereumNetworkRepository.MAINNET_ID, ContractType.ETHEREUM);
+        return new ContractLocator("", EthereumNetworkRepository.VELAS_MAIN_ID, ContractType.ETHEREUM);
     }
 
     public static boolean isPriorityToken(Token token)
