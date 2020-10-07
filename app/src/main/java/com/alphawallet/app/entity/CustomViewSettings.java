@@ -18,8 +18,8 @@ import static com.alphawallet.app.repository.SharedPreferenceRepository.HIDE_ZER
 
 public class CustomViewSettings
 {
-    private static int primaryChain = EthereumNetworkRepository.MAINNET_ID;
-    private static String primaryChainName = C.ETHEREUM_NETWORK_NAME;
+    private static int primaryChain = EthereumNetworkRepository.VELAS_MAINNET_ID;
+    private static String primaryChainName = C.VELAS_MAINNET_NETWORK_NAME;
 
     public static boolean filterToken(TokenCardMeta token, boolean filterResult, Context context)
     {

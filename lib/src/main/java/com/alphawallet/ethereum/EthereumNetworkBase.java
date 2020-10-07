@@ -21,6 +21,8 @@ public abstract class EthereumNetworkBase { // implements EthereumNetworkReposit
     public static final int ARTIS_TAU1_ID = 246785;
     public static final int BINANCE_TEST_ID = 97;
     public static final int BINANCE_MAIN_ID = 56;
+    public static final int VELAS_TESTNET_ID = 111;
+    public static final int VELAS_MAINNET_ID = 106;
 
     public static final String MAINNET_RPC_URL = "https://mainnet.infura.io/v3/da3717f25f824cc1baa32d812386d93f";
     public static final String CLASSIC_RPC_URL = "https://www.ethercluster.com/etc";
@@ -35,6 +37,8 @@ public abstract class EthereumNetworkBase { // implements EthereumNetworkReposit
     public static final String ARTIS_TAU1_RPC_URL = "https://rpc.tau1.artis.network";
     public static final String BINANCE_TEST_RPC_URL = "https://data-seed-prebsc-1-s3.binance.org:8545";
     public static final String BINANCE_MAIN_RPC_URL = "https://bsc-dataseed1.binance.org:443";
+    public static final String VELAS_MAIN_RPC_URL = "https://explorer.velas.com/rpc";
+    public static final String VELAS_TEST_RPC_URL = "https://tn.yopta.net";
 
     static Map<Integer, NetworkInfo> networkMap = new LinkedHashMap<Integer, NetworkInfo>() {
         {
@@ -63,6 +67,10 @@ public abstract class EthereumNetworkBase { // implements EthereumNetworkReposit
             put(BINANCE_TEST_ID, new NetworkInfo("Binance (Test)", "BNB", BINANCE_TEST_RPC_URL, "https://explorer.binance.org/smart-testnet/tx/",
                     ARTIS_TAU1_ID, false));
             put(BINANCE_MAIN_ID, new NetworkInfo("Binance", "BNB", BINANCE_MAIN_RPC_URL, "https://explorer.binance.org/smart/tx/",
+                    ARTIS_TAU1_ID, false));
+            put(VELAS_MAINNET_ID, new NetworkInfo("Velas", "VLX", VELAS_MAIN_RPC_URL, "https://explorer.velas.com/",
+                    ARTIS_TAU1_ID, true));
+            put(VELAS_TESTNET_ID, new NetworkInfo("Velas Testnet", "VLX", VELAS_TEST_RPC_URL, "https://xtn.yopta.net/",
                     ARTIS_TAU1_ID, false));
         }
     };
