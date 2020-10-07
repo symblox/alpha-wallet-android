@@ -65,9 +65,9 @@ public abstract class EthereumNetworkBase { // implements EthereumNetworkReposit
             put(ARTIS_TAU1_ID, new NetworkInfo("ARTIS tau1 (Test)", "ATS", ARTIS_TAU1_RPC_URL, "https://explorer.tau1.artis.network/tx/",
                     ARTIS_TAU1_ID, false));
             put(BINANCE_TEST_ID, new NetworkInfo("Binance (Test)", "BNB", BINANCE_TEST_RPC_URL, "https://explorer.binance.org/smart-testnet/tx/",
-                    ARTIS_TAU1_ID, false));
+                    BINANCE_TEST_ID, false));
             put(BINANCE_MAIN_ID, new NetworkInfo("Binance", "BNB", BINANCE_MAIN_RPC_URL, "https://explorer.binance.org/smart/tx/",
-                    ARTIS_TAU1_ID, false));
+                    BINANCE_MAIN_ID, false));
             put(VELAS_MAINNET_ID, new NetworkInfo("Velas", "VLX", VELAS_MAIN_RPC_URL, "https://explorer.velas.com/",
                     ARTIS_TAU1_ID, true));
             put(VELAS_TESTNET_ID, new NetworkInfo("Velas Testnet", "VLX", VELAS_TEST_RPC_URL, "https://xtn.yopta.net/",

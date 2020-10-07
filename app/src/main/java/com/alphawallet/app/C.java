@@ -27,6 +27,8 @@ public abstract class C {
     public static final String ARTIS_TAU1_NETWORK = "ARTIS tau1 (Test)";
     public static final String BINANCE_TEST_NETWORK = "Binance (Test)";
     public static final String BINANCE_MAIN_NETWORK = "Binance";
+    public static final String VELAS_TEST_NETWORK = "VELAS (Test)";
+    public static final String VELAS_MAIN_NETWORK = "VELAS";
 
     public static final String ETHEREUM_TICKER_NAME = "ethereum";
     public static final String CLASSIC_TICKER_NAME = "ethereum-classic";

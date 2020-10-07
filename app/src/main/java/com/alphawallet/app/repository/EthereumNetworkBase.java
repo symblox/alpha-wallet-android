@@ -350,6 +350,8 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
                 return BINANCE_TEST_FALLBACK_RPC_URL;
             case VELAS_MAINNET_ID:
                 return VELAS_RPC_URL;
+            case VELAS_TESTNET_ID:
+                return VELAS_TEST_RPC_URL;
             default:
                 return MAINNET_RPC_URL;
         }
