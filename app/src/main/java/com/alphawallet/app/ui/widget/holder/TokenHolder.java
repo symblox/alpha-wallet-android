@@ -122,6 +122,7 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
             //setup name and value (put these together on a single string to make wrap-around text appear better).
             String nameValue = token.getStringBalance() + " " + tokenName;
             balanceEth.setText(nameValue);
+            balanceCurrency.setText(EMPTY_BALANCE);
 
             primaryElement = false;
 
@@ -297,7 +298,6 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
             RealmTokenTicker rawTicker = realmTicker.first();
             if (rawTicker == null) return;
             //update ticker info
-            //android.util.Log.d("namphantest", " rawTicket.contract:" + rawTicker.getId() + "  contract:" + rawTicker.getContract() + "  real:" + rawTicker.getRealm().getConfiguration().getPath());
             TokenTicker tt = new TokenTicker(rawTicker.getPrice(), rawTicker.getPercentChange24h(), rawTicker.getCurrencySymbol(),
                     rawTicker.getImage(), rawTicker.getUpdatedTime());
             setTickerInfo(tt);
