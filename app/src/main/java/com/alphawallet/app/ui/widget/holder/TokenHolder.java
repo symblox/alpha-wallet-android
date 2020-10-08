@@ -95,6 +95,12 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
 
         try
         {
+            if (realmUpdate != null)
+            {
+                realmUpdate.removeAllChangeListeners();
+                realmUpdate = null;
+            }
+
             token = tokensService.getToken(data.getChain(), data.getAddress());
             if (token == null)
             {
@@ -106,12 +112,6 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
                 //edge condition - looking at a contract as an account
                 Token backupChain = tokensService.getToken(data.getChain(), "eth");
                 if (backupChain != null) token = backupChain;
-            }
-
-            if (realmUpdate != null)
-            {
-                realmUpdate.removeAllChangeListeners();
-                realmUpdate = null;
             }
 
             tokenLayout.setBackgroundResource(R.drawable.background_marketplace_event);
@@ -297,6 +297,7 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
             RealmTokenTicker rawTicker = realmTicker.first();
             if (rawTicker == null) return;
             //update ticker info
+            //android.util.Log.d("namphantest", " rawTicket.contract:" + rawTicker.getId() + "  contract:" + rawTicker.getContract() + "  real:" + rawTicker.getRealm().getConfiguration().getPath());
             TokenTicker tt = new TokenTicker(rawTicker.getPrice(), rawTicker.getPercentChange24h(), rawTicker.getCurrencySymbol(),
                     rawTicker.getImage(), rawTicker.getUpdatedTime());
             setTickerInfo(tt);
