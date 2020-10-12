@@ -95,6 +95,12 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
 
         try
         {
+            if (realmUpdate != null)
+            {
+                realmUpdate.removeAllChangeListeners();
+                realmUpdate = null;
+            }
+
             token = tokensService.getToken(data.getChain(), data.getAddress());
             if (token == null)
             {
@@ -108,12 +114,6 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
                 if (backupChain != null) token = backupChain;
             }
 
-            if (realmUpdate != null)
-            {
-                realmUpdate.removeAllChangeListeners();
-                realmUpdate = null;
-            }
-
             tokenLayout.setBackgroundResource(R.drawable.background_marketplace_event);
             if (EthereumNetworkRepository.isPriorityToken(token)) extendedInfo.setVisibility(View.GONE);
             tokenName = token.getFullName(assetDefinition, token.getTicketCount());
@@ -122,6 +122,7 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
             //setup name and value (put these together on a single string to make wrap-around text appear better).
             String nameValue = token.getStringBalance() + " " + tokenName;
             balanceEth.setText(nameValue);
+            balanceCurrency.setText(EMPTY_BALANCE);
 
             primaryElement = false;
 
