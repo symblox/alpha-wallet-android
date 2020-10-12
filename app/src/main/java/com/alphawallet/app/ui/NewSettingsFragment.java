@@ -265,7 +265,7 @@ public class NewSettingsFragment extends BaseFragment {
     private void onDefaultWallet(Wallet wallet) {
         this.wallet = wallet;
         if (wallet.address != null) {
-            myAddressSetting.setSubtitle(wallet.address);
+            myAddressSetting.setSubtitle(wallet.vlxAddress());
         }
 
         switch (wallet.authLevel) {

@@ -15,4 +15,9 @@ public class MediaLinks
     public static final String AWALLET_EMAIL1 = "feedback+android";
     public static final String AWALLET_EMAIL2 = "alphawallet.com";
     public static final String AWALLET_SUBJECT = "Hi guys. I've been using AlphaWallet";
+
+    public static final String VELASWALLET_TELEGRAM_URL = "https://t.me/symblox";
+    public static final String VELASWALLET_TWITTER_URL = "https://twitter.com/symbloxdefi";
+    public static final String VELASWALLET_FAQ_URL = "https://help.symblox.io";
+    public static final String VELASWALLET_WEBSITE_URL = "https://symblox.io";
 }

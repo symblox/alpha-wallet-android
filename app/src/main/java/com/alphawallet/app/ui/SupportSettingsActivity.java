@@ -20,10 +20,11 @@ public class SupportSettingsActivity extends BaseActivity {
 
     private SettingsItemView telegram;
     private SettingsItemView twitter;
-    private SettingsItemView reddit;
-    private SettingsItemView facebook;
-    private SettingsItemView blog;
+    //private SettingsItemView reddit;
+    //private SettingsItemView facebook;
+    //private SettingsItemView blog;
     private SettingsItemView faq;
+    private SettingsItemView website;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class SupportSettingsActivity extends BaseActivity {
                 .withTitle(R.string.twitter)
                 .withListener(this::onTwitterClicked)
                 .build();
-
+/*
         reddit = new SettingsItemView.Builder(this)
                 .withIcon(R.drawable.ic_logo_reddit)
                 .withTitle(R.string.reddit)
@@ -68,22 +69,29 @@ public class SupportSettingsActivity extends BaseActivity {
                 .withTitle(R.string.title_blog)
                 .withListener(this::onBlogClicked)
                 .build();
-
+*/
         faq = new SettingsItemView.Builder(this)
                 .withIcon(R.drawable.ic_settings_faq)
                 .withTitle(R.string.title_faq)
                 .withListener(this::onFaqClicked)
                 .build();
+
+        website = new SettingsItemView.Builder(this)
+                .withIcon(R.drawable.ic_launcher_foreground)
+                .withTitle(R.string.title_website)
+                .withListener(this::onWebsiteClicked)
+                .build();
     }
 
     private void addSettingsToLayout() {
         supportSettingsLayout = findViewById(R.id.layout);
-        if (MediaLinks.AWALLET_TELEGRAM_URL != null) {
+        if (MediaLinks.VELASWALLET_TELEGRAM_URL != null) {
             supportSettingsLayout.addView(telegram);
         }
-        if (MediaLinks.AWALLET_TWITTER_URL != null) {
+        if (MediaLinks.VELASWALLET_TWITTER_URL != null) {
             supportSettingsLayout.addView(twitter);
         }
+        /*
         if (MediaLinks.AWALLET_REDDIT_URL != null) {
             supportSettingsLayout.addView(reddit);
         }
@@ -92,13 +100,14 @@ public class SupportSettingsActivity extends BaseActivity {
         }
         if (MediaLinks.AWALLET_BLOG_URL != null) {
             supportSettingsLayout.addView(blog);
-        }
+        } */
         supportSettingsLayout.addView(faq);
+        supportSettingsLayout.addView(website);
     }
 
     private void onTelegramClicked() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(MediaLinks.AWALLET_TELEGRAM_URL));
+        intent.setData(Uri.parse(MediaLinks.VELASWALLET_TELEGRAM_URL));
         if (isAppAvailable(C.TELEGRAM_PACKAGE_NAME)) {
             intent.setPackage(C.TELEGRAM_PACKAGE_NAME);
         }
@@ -128,10 +137,10 @@ public class SupportSettingsActivity extends BaseActivity {
         Intent intent;
         try {
             getPackageManager().getPackageInfo(C.TWITTER_PACKAGE_NAME, 0);
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(MediaLinks.AWALLET_TWITTER_URL));
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(MediaLinks.VELASWALLET_TWITTER_URL));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         } catch (Exception e) {
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(MediaLinks.AWALLET_TWITTER_URL));
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(MediaLinks.VELASWALLET_TWITTER_URL));
         }
         try {
             startActivity(intent);
@@ -179,7 +188,26 @@ public class SupportSettingsActivity extends BaseActivity {
     }
 
     private void onFaqClicked() {
-        new HelpRouter().open(this);
+        //new HelpRouter().open(this);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(MediaLinks.VELASWALLET_FAQ_URL));
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+        }
+    }
+
+    private void onWebsiteClicked() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(MediaLinks.VELASWALLET_WEBSITE_URL));
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            Crashlytics.logException(e);
+            e.printStackTrace();
+        }
     }
 
     private boolean isAppAvailable(String packageName) {

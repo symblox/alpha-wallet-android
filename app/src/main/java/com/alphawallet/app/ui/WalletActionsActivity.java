@@ -179,7 +179,8 @@ public class WalletActionsActivity extends BaseActivity implements Runnable, Vie
             walletAddressSeparator.setVisibility(View.GONE);
         }
 
-        walletAddressText.setText(Utils.formatAddress(wallet.address));
+        //walletAddressText.setText(Utils.formatAddress(wallet.address));
+        walletAddressText.setText(wallet.vlxAddress());
 
         deleteWalletSetting.setListener(this::onDeleteWalletSettingClicked);
 
@@ -341,7 +342,7 @@ public class WalletActionsActivity extends BaseActivity implements Runnable, Vie
 
     private void copyToClipboard() {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("walletAddress", wallet.address);
+        ClipData clip = ClipData.newPlainText("walletAddress", wallet.vlxAddress());
         clipboard.setPrimaryClip(clip);
 
         Toast.makeText(this, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show();

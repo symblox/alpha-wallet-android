@@ -109,7 +109,8 @@ public class WalletHolder extends BinderViewHolder<Wallet> implements View.OnCli
 			walletBalanceText.setText(walletBalance);
 			walletBalanceCurrency.setText(wallet.balanceSymbol);
 
-			walletAddressText.setText(Utils.formatAddress(wallet.address));
+			//walletAddressText.setText(Utils.formatAddress(wallet.address));
+			walletAddressText.setText(wallet.vlxAddress());
 
 			walletSelectedIcon.setSelected(addition.getBoolean(IS_DEFAULT_ADDITION, false));
 

@@ -570,6 +570,7 @@
     <string name="title_support">支持</string>
     <string name="title_blog">博客</string>
     <string name="title_faq">常见问题</string>
+    <string name="title_website">Website</string>
     <string name="title_console">控制台</string>
     <string name="title_clear_browser_cache">清除浏览器缓存</string>
     <string name="title_tokenscript">TokenScript</string>
