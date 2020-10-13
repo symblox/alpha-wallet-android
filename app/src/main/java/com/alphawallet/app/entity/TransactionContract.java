@@ -10,6 +10,7 @@ import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.ui.widget.entity.StatusType;
 import com.alphawallet.app.ui.widget.holder.TransactionHolder;
 import com.alphawallet.app.util.BalanceUtils;
+import com.alphawallet.app.util.VelasUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -206,7 +207,7 @@ public class TransactionContract implements Parcelable {
         else
         {
             //simple heuristic: if value is attached to a transaction from the user, then it's outgoing
-            if (tx.from.equalsIgnoreCase(walletAddress))
+            if (tx.from.equalsIgnoreCase(walletAddress) || tx.from.equalsIgnoreCase(VelasUtils.ethToVlx(walletAddress)))
             {
                 supplimentalTxt = "-" + BalanceUtils.getScaledValue(tx.value, C.ETHER_DECIMALS) + " " + networkName;
             }
