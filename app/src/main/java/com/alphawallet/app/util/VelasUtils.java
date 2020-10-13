@@ -56,16 +56,16 @@ public class VelasUtils {
         return "";
     }
 
-    public static String ethToVlx(String hexAddress) throws Error {
+    public static String ethToVlx(String hexAddress) {
         String cleanAddress = Hex.cleanHexPrefix(hexAddress).toLowerCase();
         if (TextUtils.isEmpty(cleanAddress) || cleanAddress.length() != 40) {
-            throw new Error("Invalid address length");
+            return hexAddress;
         }
         String checksum = sha256(sha256(cleanAddress)).substring(0, 8);
         String longAddress = cleanAddress + checksum;
         int[] buffer = hexStringToByteArray(longAddress);
         if (buffer.length == 0) {
-            throw new Error("Invalid address");
+            return hexAddress;
         }
         ArrayList<Integer> digits = new ArrayList<>();
         digits.add(0);
@@ -101,9 +101,9 @@ public class VelasUtils {
     }
 
 
-    public static String vlxToEth(String vlxAddress) throws Error {
+    public static String vlxToEth(String vlxAddress) {
         if (!VelasUtils.isValidVlxAddress(vlxAddress)) {
-            throw new Error("Invalid address");
+            return vlxAddress;
         }
         String string = vlxAddress.substring(1);
         ArrayList<Integer> bytes = new ArrayList<>();
@@ -111,7 +111,7 @@ public class VelasUtils {
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);
             if (ALPHABET_MAP.get(c) == null) {
-                throw new Error("Non-base58 character");
+                return vlxAddress;
             }
             for (int j = 0; j < bytes.size(); j++) {
                 bytes.set(j, bytes.get(j) * BASE);
@@ -140,16 +140,16 @@ public class VelasUtils {
         }
         String longAddress = Hex.cleanHexPrefix(Hex.byteArrayToHexString(reverseBytes));
         if (TextUtils.isEmpty(longAddress) || longAddress.length() != 48) {
-            throw new Error("Invalid address length");
+            return vlxAddress;
         }
         String ethAddress = longAddress.substring(0, 40);
         String addressChecksum = longAddress.substring(40);
         if (TextUtils.isEmpty(ethAddress) || TextUtils.isEmpty(addressChecksum)) {
-            throw new Error("Invalid address");
+            return vlxAddress;
         }
         String checksum = sha256(sha256(ethAddress)).substring(0, 8);
         if (!addressChecksum.equalsIgnoreCase(checksum)) {
-            throw new Error("Invalid address");
+            return vlxAddress;
         }
         return "0x" + ethAddress;
     }

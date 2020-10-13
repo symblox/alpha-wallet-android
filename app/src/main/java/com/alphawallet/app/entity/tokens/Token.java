@@ -16,6 +16,7 @@ import com.alphawallet.app.service.AssetDefinitionService;
 import com.alphawallet.app.service.TokensService;
 import com.alphawallet.app.ui.widget.entity.StatusType;
 import com.alphawallet.app.util.BalanceUtils;
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.app.viewmodel.BaseViewModel;
 import com.alphawallet.token.entity.TicketRange;
 import com.alphawallet.token.entity.TokenScriptResult;
@@ -559,7 +560,7 @@ public class Token implements Parcelable, Comparable<Token>
         String name;
         if (isEthereum())
         {
-            if (transaction.from.equalsIgnoreCase(tokenWallet))
+            if (isMyWallet(transaction.from))
             {
                 name = ctx.getString(R.string.sent);
             }
@@ -575,6 +576,10 @@ public class Token implements Parcelable, Comparable<Token>
 
 
         return name;
+    }
+
+    private boolean isMyWallet(String from) {
+        return (from.equalsIgnoreCase(tokenWallet) || from.equalsIgnoreCase(VelasUtils.ethToVlx(tokenWallet)));
     }
 
     /* Raw string value for balance */
@@ -680,7 +685,7 @@ public class Token implements Parcelable, Comparable<Token>
 
     public boolean getIsSent(Transaction transaction)
     {
-        return transaction.from.equalsIgnoreCase(tokenWallet);
+        return isMyWallet(transaction.from);
     }
 
     public String getWallet()
@@ -835,7 +840,7 @@ public class Token implements Parcelable, Comparable<Token>
 
     public StatusType ethereumTxImage(Transaction tx)
     {
-        return tx.from.equalsIgnoreCase(tokenWallet) ? (tx.to.equals(tx.from) ? StatusType.SELF : StatusType.SENT)
+        return isMyWallet(tx.from) ? (tx.to.equals(tx.from) ? StatusType.SELF : StatusType.SENT)
                 : StatusType.RECEIVE;
     }
 

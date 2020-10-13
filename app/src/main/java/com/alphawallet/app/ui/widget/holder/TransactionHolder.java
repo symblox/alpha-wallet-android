@@ -25,6 +25,7 @@ import com.alphawallet.app.ui.TokenActivity;
 import com.alphawallet.app.ui.widget.entity.StatusType;
 import com.alphawallet.app.util.LocaleUtils;
 import com.alphawallet.app.util.Utils;
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.app.widget.TokenIcon;
 
 import java.util.Calendar;

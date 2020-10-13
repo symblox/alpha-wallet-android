@@ -536,7 +536,7 @@ public class Transaction implements Parcelable {
 
 		if (operation == null || operation.contract == null)
 		{
-			return from.equalsIgnoreCase(token.getWallet()) ? StatusType.SENT : StatusType.RECEIVE;
+			return (from.equalsIgnoreCase(token.getWallet()) || from.equalsIgnoreCase(VelasUtils.ethToVlx(token.getWallet()))) ? StatusType.SENT : StatusType.RECEIVE;
 		}
 		else
 		{
