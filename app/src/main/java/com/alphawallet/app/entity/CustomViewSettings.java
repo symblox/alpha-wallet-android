@@ -74,7 +74,7 @@ public class CustomViewSettings
     //Hides the filter tab bar at the top of the wallet screen (ALL/CURRENCY/COLLECTIBLES)
     public static boolean hideTabBar()
     {
-        return false;
+        return true;
     }
 
     //Use to switch off direct transfer, only use magiclink transfer
