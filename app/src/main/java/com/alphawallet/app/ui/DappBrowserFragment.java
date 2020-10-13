@@ -554,6 +554,7 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
             cancelSearchSession();
         } else {
             urlTv.getText().clear();
+            beginSearchSession();
         }
     }
 
@@ -579,7 +580,7 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
 
         // Both these are required, the onFocus listener is required to respond to the first click.
         urlTv.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) beginSearchSession();
+            if (hasFocus && getActivity() != null) beginSearchSession();
         });
 
         urlTv.setOnClickListener(v -> {
@@ -621,26 +622,18 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
                 Observable.fromArray(clear), (interval, item) -> item)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> postBeginSearchSession(item));
-
-        urlTv.showDropDown();
+                .subscribe(this::postBeginSearchSession);
     }
 
     private void postBeginSearchSession(ImageView item)
     {
         urlTv.setAdapter(adapter);
+        urlTv.showDropDown();
         if (item.getVisibility() == View.GONE)
         {
             expandCollapseView(item, true);
             KeyboardUtils.showKeyboard(urlTv);
         }
-
-        //Set Fragment after sometime
-        SearchFragment f = new SearchFragment();
-        f.setCallbacks(view -> {
-            cancelSearchSession();
-        });
-        attachFragment(f, SEARCH);
     }
 
     /**
@@ -866,7 +859,7 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
                             break;
                         case C.DAPP_PREFIX_WALLETCONNECT:
                             //start walletconnect
-                            viewModel.handleWalletConnect(getContext(), url);
+                            if (getContext() != null) viewModel.handleWalletConnect(getContext(), url);
                             return true;
                         default:
                             break;
