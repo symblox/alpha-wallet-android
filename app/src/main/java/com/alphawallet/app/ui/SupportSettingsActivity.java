@@ -24,7 +24,7 @@ public class SupportSettingsActivity extends BaseActivity {
     //private SettingsItemView facebook;
     //private SettingsItemView blog;
     private SettingsItemView faq;
-    private SettingsItemView website;
+//    private SettingsItemView website;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,11 +76,11 @@ public class SupportSettingsActivity extends BaseActivity {
                 .withListener(this::onFaqClicked)
                 .build();
 
-        website = new SettingsItemView.Builder(this)
-                .withIcon(R.drawable.ic_launcher_foreground)
-                .withTitle(R.string.title_website)
-                .withListener(this::onWebsiteClicked)
-                .build();
+//        website = new SettingsItemView.Builder(this)
+//                .withIcon(R.drawable.ic_tab_symblox_active)
+//                .withTitle(R.string.title_website)
+//                .withListener(this::onWebsiteClicked)
+//                .build();
     }
 
     private void addSettingsToLayout() {
@@ -102,7 +102,7 @@ public class SupportSettingsActivity extends BaseActivity {
             supportSettingsLayout.addView(blog);
         } */
         supportSettingsLayout.addView(faq);
-        supportSettingsLayout.addView(website);
+//        supportSettingsLayout.addView(website);
     }
 
     private void onTelegramClicked() {
