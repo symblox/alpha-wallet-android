@@ -255,9 +255,10 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
     }
 
     private String vlxAddress(String address) {
-        if (!TextUtils.isEmpty(address)) {
-            return VelasUtils.ethToVlx(Keys.toChecksumAddress(address));
-        }
+        //Symblox doesn't want to show velas address in this screen
+//        if (!TextUtils.isEmpty(address)) {
+//            return VelasUtils.ethToVlx(Keys.toChecksumAddress(address));
+//        }
         return Keys.toChecksumAddress(address);
     }
 
