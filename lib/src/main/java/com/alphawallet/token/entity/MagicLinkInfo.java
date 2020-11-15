@@ -36,7 +36,7 @@ public class MagicLinkInfo
     private static final String goerliEtherscan = "https://goerli.etherscan.io/";
     private static final String artisSigma1Etherscan = "https://explorer.sigma1.artis.network/";
     private static final String artisTau1Etherscan = "https://explorer.tau1.artis.network/";
-    private static final String velasTestEtherscan = "https://xtn.yopta.net/";
+    private static final String velasTestEtherscan = "https://explorer.testnet.veladev.net/";
     private static final String velasMainEtherscan = "https://explorer.velas.com/";
 
     //network ids

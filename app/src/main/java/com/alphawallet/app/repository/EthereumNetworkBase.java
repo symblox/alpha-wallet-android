@@ -55,8 +55,8 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     //Fallback nodes: these nodes are used if there's no Amberdata key, and also as a fallback in case the primary node times out while attempting a call
     public static final String MAINNET_RPC_URL = "https://mainnet.infura.io/v3/" + getInfuraKey();
     public static final String RINKEBY_RPC_URL = "https://rinkeby.infura.io/v3/" + getInfuraKey();
-    public static final String VELAS_RPC_URL = "https://explorer.velas.com/rpc";
-    public static final String VELAS_TEST_RPC_URL = "https://tn.yopta.net";
+    public static final String VELAS_RPC_URL = "https://rpc.symblox.net";
+    public static final String VELAS_TEST_RPC_URL = "https://explorer.testnet.veladev.net/rpc";
 
     //Note that AlphaWallet now uses a double node configuration. See class AWHttpService comment 'try primary node'.
     //If you supply a main RPC and secondary it will try the secondary if the primary node times out after 10 seconds.
@@ -101,14 +101,14 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     static final NetworkInfo[] DEFAULT_NETWORKS = new NetworkInfo[] {
             new NetworkInfo(C.VELAS_MAINNET_NETWORK_NAME, C.VELAS_SYMBOL,
                     VELAS_RPC_URL,
-                    "https://explorer.velas.com/tx/",VELAS_MAINNET_ID, true,
-                    VELAS_RPC_URL,
+                    "https://explorer.velas.com/tx/", VELAS_MAINNET_ID, true,
+                    "https://explorer.velas.com/rpc",
                     "https://explorer.velas.com/"),
             new NetworkInfo(C.VELAS_TESTNET_NETWORK_NAME, C.VELAS_SYMBOL,
                     VELAS_TEST_RPC_URL,
-                    "https://xtn.yopta.net/",VELAS_TESTNET_ID, false,
+                    "https://explorer.testnet.veladev.net/", VELAS_TESTNET_ID, false,
                     VELAS_TEST_RPC_URL,
-                    "https://xtn.yopta.net/"),
+                    "https://explorer.testnet.veladev.net/"),
             new NetworkInfo(C.ETHEREUM_NETWORK_NAME, C.ETH_SYMBOL,
                     MAINNET_RPC_URL,
                     "https://cn.etherscan.com/tx/",MAINNET_ID, false,
