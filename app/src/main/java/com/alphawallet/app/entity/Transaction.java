@@ -62,6 +62,16 @@ public class Transaction implements Parcelable {
 		return TextUtils.isEmpty(blockNumber) || blockNumber.equals("0") || blockNumber.equals("-2");
 	}
 
+	public boolean hasError()
+	{
+		return TextUtils.isEmpty(error) && error.equals("1");
+	}
+
+	public boolean hasData()
+	{
+		return !TextUtils.isEmpty(input) && input.length() > 2;
+	}
+
     public Transaction(
             String hash,
             String error,
@@ -355,7 +365,7 @@ public class Transaction implements Parcelable {
 		else
 		{
 			if (to.equalsIgnoreCase(contractAddress)) return true;
-			else return operation != null && (operations[0].contract.address.equalsIgnoreCase(contractAddress));
+			else return operation != null && (operation.walletInvolvedWithTransaction(walletAddress) || operation.contract.address.equalsIgnoreCase(contractAddress));
 		}
 	}
 
@@ -473,7 +483,7 @@ public class Transaction implements Parcelable {
 	{
 		if (operations == null || operations.length == 0)
 			return token.getTransactionValue(this, precision);
-		if (error.equals("1")) return "";
+		if (hasError()) return "";
 
 		//TODO: Handle multiple operation transactions
 		TransactionOperation operation = operations[0];
@@ -598,7 +608,7 @@ public class Transaction implements Parcelable {
 
 	public StatusType getTransactionStatus()
 	{
-		if (error != null && error.equals("1"))
+		if (hasError())
 		{
 			return StatusType.FAILED;
 		}
