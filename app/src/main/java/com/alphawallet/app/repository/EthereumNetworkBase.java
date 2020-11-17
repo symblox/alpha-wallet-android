@@ -55,7 +55,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     //Fallback nodes: these nodes are used if there's no Amberdata key, and also as a fallback in case the primary node times out while attempting a call
     public static final String MAINNET_RPC_URL = "https://mainnet.infura.io/v3/" + getInfuraKey();
     public static final String RINKEBY_RPC_URL = "https://rinkeby.infura.io/v3/" + getInfuraKey();
-    public static final String VELAS_RPC_URL = "https://explorer.velas.com/rpc";
+    public static final String VELAS_RPC_URL = "https://rpc.symblox.net";
     public static final String VELAS_TEST_RPC_URL = "https://tn.yopta.net";
 
     //Note that AlphaWallet now uses a double node configuration. See class AWHttpService comment 'try primary node'.
