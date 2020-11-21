@@ -1,11 +1,11 @@
 package com.alphawallet.app.viewmodel;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.alphawallet.app.C;
@@ -25,16 +25,12 @@ import com.alphawallet.app.service.TokensService;
 import com.alphawallet.app.ui.ConfirmationActivity;
 
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.EthTransaction;
-import org.web3j.protocol.core.methods.response.Log;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -80,7 +76,7 @@ public class TransactionDetailViewModel extends BaseViewModel {
     public void prepare(final int chainId, final String walletAddr)
     {
         walletAddress = walletAddr;
-        currentBlockUpdateDisposable = Observable.interval(0, 10, TimeUnit.SECONDS)
+        currentBlockUpdateDisposable = Observable.interval(0, 6, TimeUnit.SECONDS)
                 .doOnNext(l -> {
                     disposable = tokenRepository.fetchLatestBlockNumber(chainId)
                             .subscribeOn(Schedulers.io())
@@ -110,7 +106,7 @@ public class TransactionDetailViewModel extends BaseViewModel {
         if (tx != null)
         {
             lastestTx.postValue(tx);
-            if (!tx.blockNumber.equals("0"))
+            if (!tx.isPending())
             {
                 if (pendingUpdateDisposable != null && !pendingUpdateDisposable.isDisposed())
                     pendingUpdateDisposable.dispose();
@@ -219,7 +215,7 @@ public class TransactionDetailViewModel extends BaseViewModel {
 
         org.web3j.protocol.core.methods.response.Transaction ethTx = rawTx.getTransaction().get();
         disposable = EventUtils.getBlockDetails(ethTx.getBlockHash(), web3j)
-                .map(ethBlock -> fetchTransactionsInteract.storeRawTx(wallet, rawTx, ethBlock.getBlock().getTimestamp().longValue()))
+                .flatMap(ethBlock -> fetchTransactionsInteract.storeRawTx(wallet, rawTx, ethBlock.getBlock().getTimestamp().longValue()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(transaction::postValue, this::onError);

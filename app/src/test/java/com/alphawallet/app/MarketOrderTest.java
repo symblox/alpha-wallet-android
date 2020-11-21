@@ -1,6 +1,6 @@
 package com.alphawallet.app;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.alphawallet.app.entity.ActivityMeta;
 import com.alphawallet.app.entity.BaseViewCallback;
@@ -191,7 +191,7 @@ public class MarketOrderTest
             }
 
             @Override
-            public Transaction storeRawTx(Wallet wallet, EthTransaction rawTx, long timeStamp)
+            public Single<Transaction> storeRawTx(Wallet wallet, EthTransaction rawTx, long timeStamp)
             {
                 return null;
             }

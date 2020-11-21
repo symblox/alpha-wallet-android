@@ -457,7 +457,7 @@
     <string name="set_keystore_password">Establecer la contraseña del almacén de claves</string>
     <string name="keystore_loss_warning">NOTA: Debes recordar tu contraseña. No la almacenamos en ningún sitio. El almacén de claves siempre está cifrado, de lo contrario, quien la tenga puede obtener el dinero.</string>
     <string name="save_keystore">Guardar almacén de claves</string>
-    <string name="do_not_share">No compartas tu copia de seguridad. Los miembros del equipo de AlphaWallet nunca te la pedirán.</string>
+    <string name="do_not_share">No compartas tu copia de seguridad. Los miembros del equipo de wallet nunca te la pedirán.</string>
     <string name="enter_seed_phrase">Introduce la frase semilla</string>
     <string name="seed_phrase_conversion_message">Si tu frase semilla no está en inglés, pásala a inglés utilizando una herramienta como esta https://iancoleman.io/bip39/</string>
     <string name="bad_seed_phrase">Frase de recuperación no válida. Revísala e inténtalo de nuevo.</string>
@@ -672,4 +672,5 @@
     <string name="session_terminated">Session has been terminated. Switch back to Dapp and start a new WalletConnect session.</string>
     <string name="message_transaction_not_sent">Transaction not sent</string>
     <string name="popular_tokens">Tokens Populares</string>
+    <string name="unable_to_get_biometrics">No se puede obtener el desbloqueo Biométrico</string>
 </resources>

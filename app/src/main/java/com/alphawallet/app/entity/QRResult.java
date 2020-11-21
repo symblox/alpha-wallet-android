@@ -2,6 +2,7 @@ package com.alphawallet.app.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import androidx.annotation.Nullable;
 
 import com.alphawallet.app.repository.EthereumNetworkBase;
 

@@ -7,12 +7,13 @@ package com.alphawallet.app.ui.widget.adapter;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.util.SortedList;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
 
 import com.alphawallet.app.BuildConfig;
 import com.alphawallet.app.R;
@@ -100,14 +101,12 @@ public class ActivityAdapter extends RecyclerView.Adapter<BinderViewHolder> impl
         this.dataInteract = dataInteract;
         this.assetService = svs;
         tokensService = service;
-        //setHasStableIds(true);
     }
 
     public ActivityAdapter(TokensService service, FetchTransactionsInteract fetchTransactionsInteract, AssetDefinitionService svs, int layoutResId)
     {
         this.fetchTransactionsInteract = fetchTransactionsInteract;
         tokensService = service;
-        setHasStableIds(true);
         this.layoutResId = layoutResId;
         this.dataInteract = null;
         this.assetService = svs;

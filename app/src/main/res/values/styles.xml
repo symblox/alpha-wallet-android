@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -73,14 +73,16 @@
     <style name="MyAddressCopyTextStyle">
         <item name="android:paddingTop">@dimen/dp15</item>
         <item name="android:paddingBottom">@dimen/dp15</item>
-        <item name="android:paddingEnd">@dimen/dp25</item>
-        <item name="android:paddingStart">@dimen/dp25</item>
+        <item name="android:layout_marginStart">@dimen/dp16</item>
+        <item name="android:layout_marginEnd">@dimen/dp16</item>
+        <item name="android:paddingStart">@dimen/dp24</item>
+        <item name="android:paddingEnd">@dimen/dp24</item>
         <item name="android:background">@drawable/background_round_grey_5dp</item>
     </style>
 
     <style name="TransactionDetailsCopyTextStyle">
         <item name="android:paddingTop">@dimen/dp5</item>
-        <item name="android:background">@color/white</item>
+        <item name="android:background">@color/transparent</item>
         <item name="android:paddingEnd">@dimen/dp16</item>
         <item name="android:paddingBottom">@dimen/dp5</item>
     </style>
