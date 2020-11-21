@@ -57,6 +57,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     public static final String RINKEBY_RPC_URL = "https://rinkeby.infura.io/v3/" + getInfuraKey();
     public static final String VELAS_RPC_URL = "https://rpc.symblox.net";
     public static final String VELAS_TEST_RPC_URL = "https://explorer.testnet.veladev.net/rpc";
+    //public static final String VELAS_TEST_RPC_URL = "https://tn.yopta.net";
 
     //Note that AlphaWallet now uses a double node configuration. See class AWHttpService comment 'try primary node'.
     //If you supply a main RPC and secondary it will try the secondary if the primary node times out after 10 seconds.
