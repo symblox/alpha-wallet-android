@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.widget.LinearLayout;
 
 import com.alphawallet.app.C;
@@ -12,7 +12,7 @@ import com.alphawallet.app.R;
 import com.alphawallet.app.entity.MediaLinks;
 import com.alphawallet.app.router.HelpRouter;
 import com.alphawallet.app.widget.SettingsItemView;
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 public class SupportSettingsActivity extends BaseActivity {
 
@@ -24,7 +24,7 @@ public class SupportSettingsActivity extends BaseActivity {
     //private SettingsItemView facebook;
     //private SettingsItemView blog;
     private SettingsItemView faq;
-    private SettingsItemView website;
+//    private SettingsItemView website;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,11 +76,11 @@ public class SupportSettingsActivity extends BaseActivity {
                 .withListener(this::onFaqClicked)
                 .build();
 
-        website = new SettingsItemView.Builder(this)
-                .withIcon(R.drawable.ic_launcher_foreground)
-                .withTitle(R.string.title_website)
-                .withListener(this::onWebsiteClicked)
-                .build();
+//        website = new SettingsItemView.Builder(this)
+//                .withIcon(R.drawable.ic_tab_symblox_active)
+//                .withTitle(R.string.title_website)
+//                .withListener(this::onWebsiteClicked)
+//                .build();
     }
 
     private void addSettingsToLayout() {
@@ -102,7 +102,7 @@ public class SupportSettingsActivity extends BaseActivity {
             supportSettingsLayout.addView(blog);
         } */
         supportSettingsLayout.addView(faq);
-        supportSettingsLayout.addView(website);
+//        supportSettingsLayout.addView(website);
     }
 
     private void onTelegramClicked() {
@@ -114,7 +114,7 @@ public class SupportSettingsActivity extends BaseActivity {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             e.printStackTrace();
         }
     }
@@ -128,7 +128,7 @@ public class SupportSettingsActivity extends BaseActivity {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             e.printStackTrace();
         }
     }
@@ -145,7 +145,7 @@ public class SupportSettingsActivity extends BaseActivity {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             e.printStackTrace();
         }
     }
@@ -161,7 +161,7 @@ public class SupportSettingsActivity extends BaseActivity {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             e.printStackTrace();
         }
     }
@@ -178,7 +178,7 @@ public class SupportSettingsActivity extends BaseActivity {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             e.printStackTrace();
         }
     }
@@ -194,7 +194,7 @@ public class SupportSettingsActivity extends BaseActivity {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             e.printStackTrace();
         }
     }
@@ -205,7 +205,7 @@ public class SupportSettingsActivity extends BaseActivity {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             e.printStackTrace();
         }
     }

@@ -1,14 +1,16 @@
 package com.alphawallet.app.ui;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
@@ -18,6 +20,7 @@ import com.alphawallet.app.entity.Transaction;
 import com.alphawallet.app.entity.TransactionOperation;
 import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.entity.tokens.Token;
+import com.alphawallet.app.repository.EthereumNetworkRepository;
 import com.alphawallet.app.ui.widget.holder.TransactionHolder;
 import com.alphawallet.app.util.BalanceUtils;
 import com.alphawallet.app.util.LocaleUtils;
@@ -39,7 +42,6 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
-import static com.alphawallet.app.C.Key.TRANSACTION;
 import static com.alphawallet.app.C.Key.WALLET;
 import static com.alphawallet.app.repository.EthereumNetworkBase.VELAS_MAINNET_ID;
 
@@ -62,7 +64,7 @@ public class TransactionDetailActivity extends BaseActivity implements StandardF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction_detail);
 
-        viewModel = ViewModelProviders.of(this, transactionDetailViewModelFactory)
+        viewModel = new ViewModelProvider(this, transactionDetailViewModelFactory)
                 .get(TransactionDetailViewModel.class);
         viewModel.latestBlock().observe(this, this::onLatestBlock);
         viewModel.onTransaction().observe(this, this::onTransaction);
@@ -87,7 +89,7 @@ public class TransactionDetailActivity extends BaseActivity implements StandardF
 
         String blockNumber = transaction.blockNumber;
         TransactionOperation op = null;
-        if (transaction.blockNumber != null && transaction.blockNumber.equals("0"))
+        if (transaction.isPending())
         {
             //how long has this TX been pending
             findViewById(R.id.pending_spinner).setVisibility(View.VISIBLE);
@@ -127,6 +129,7 @@ public class TransactionDetailActivity extends BaseActivity implements StandardF
 
         chainName = viewModel.getNetworkName(transaction.chainId);
         ((TextView) findViewById(R.id.network)).setText(chainName);
+        ((ImageView) findViewById(R.id.network_icon)).setImageResource(EthereumNetworkRepository.getChainLogo(transaction.chainId));
 
         token = viewModel.getToken(transaction.chainId, transaction.to);
         TextView chainLabel = findViewById(R.id.text_chain_name);
@@ -138,11 +141,12 @@ public class TransactionDetailActivity extends BaseActivity implements StandardF
 
         if (!viewModel.hasEtherscanDetail(transaction)) findViewById(R.id.more_detail).setVisibility(View.GONE);
         setupWalletDetails(op);
+        checkFailed();
     }
 
     private void onTxUpdated(Transaction latestTx)
     {
-        if (latestTx.blockNumber.equals("0"))
+        if (latestTx.isPending())
         {
             long pendingTimeInSeconds = (System.currentTimeMillis() / 1000) - latestTx.timeStamp;
             ((TextView) findViewById(R.id.block_number)).setText(getString(R.string.transaction_pending_for, Utils.convertTimePeriodInSeconds(pendingTimeInSeconds, this)));
@@ -155,6 +159,7 @@ public class TransactionDetailActivity extends BaseActivity implements StandardF
             ((TextView) findViewById(R.id.txn_time)).setText(localiseUnixTime(transaction.timeStamp));
             //update function bar
             functionBar.setupSecondaryFunction(this, R.string.action_open_etherscan);
+            checkFailed();
         }
     }
 
@@ -169,11 +174,10 @@ public class TransactionDetailActivity extends BaseActivity implements StandardF
     {
         try
         {
-            BigInteger txBlock = new BigInteger(transaction.blockNumber);
-            if (!latestBlock.equals(BigInteger.ZERO) && !txBlock.equals(BigInteger.ZERO))
+            if (!latestBlock.equals(BigInteger.ZERO) && !transaction.isPending())
             {
                 //how many confirmations?
-                BigInteger confirmations = latestBlock.subtract(txBlock);
+                BigInteger confirmations = latestBlock.subtract(new BigInteger(transaction.blockNumber));
                 String confirmation = transaction.blockNumber + " (" + confirmations.toString(10) + " " + getString(R.string.confirmations)  + ")";
                 ((TextView) findViewById(R.id.block_number)).setText(confirmation);
             }
@@ -292,6 +296,17 @@ public class TransactionDetailActivity extends BaseActivity implements StandardF
         else
         {
             findViewById(R.id.text_operation_name).setVisibility(View.GONE);
+        }
+    }
+
+    private void checkFailed()
+    {
+        if (transaction.hasError())
+        {
+            TextView failed = findViewById(R.id.failed);
+            TextView failedF = findViewById(R.id.failedFace);
+            if (failed != null) failed.setVisibility(View.VISIBLE);
+            if (failedF != null) failedF.setVisibility(View.VISIBLE);
         }
     }
 

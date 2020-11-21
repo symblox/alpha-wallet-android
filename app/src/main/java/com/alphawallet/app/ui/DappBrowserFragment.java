@@ -5,7 +5,9 @@ import android.animation.Animator;
 import android.animation.LayoutTransition;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
+
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -16,12 +18,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.BuildConfig;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -47,6 +48,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alphawallet.app.BuildConfig;
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.CryptoFunctions;
@@ -82,6 +84,7 @@ import com.alphawallet.app.util.LocaleUtils;
 import com.alphawallet.app.util.QRParser;
 import com.alphawallet.app.util.Utils;
 import com.alphawallet.app.util.VelasUtils;
+import com.alphawallet.app.viewmodel.ConfirmationViewModel;
 import com.alphawallet.app.viewmodel.DappBrowserViewModel;
 import com.alphawallet.app.viewmodel.DappBrowserViewModelFactory;
 import com.alphawallet.app.web3.OnSignMessageListener;
@@ -425,7 +428,6 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
     private void setupMenu(View baseView)
     {
         refresh = baseView.findViewById(R.id.refresh);
-        final MenuItem gotoHomepage = toolbar.getMenu().findItem(R.id.action_goto_homepage);
         final MenuItem reload = toolbar.getMenu().findItem(R.id.action_reload);
         final MenuItem share = toolbar.getMenu().findItem(R.id.action_share);
         final MenuItem scan = toolbar.getMenu().findItem(R.id.action_scan);
@@ -433,11 +435,6 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
         final MenuItem history = toolbar.getMenu().findItem(R.id.action_history);
         final MenuItem bookmarks = toolbar.getMenu().findItem(R.id.action_my_dapps);
         final MenuItem clearCache = toolbar.getMenu().findItem(R.id.action_clear_cache);
-
-        if (gotoHomepage != null) gotoHomepage.setOnMenuItemClickListener(menuItem -> {
-            homePressed();
-            return true;
-        });
 
         if (reload != null) reload.setOnMenuItemClickListener(menuItem -> {
             reloadPage();
@@ -554,6 +551,7 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
             cancelSearchSession();
         } else {
             urlTv.getText().clear();
+            beginSearchSession();
         }
     }
 
@@ -579,7 +577,7 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
 
         // Both these are required, the onFocus listener is required to respond to the first click.
         urlTv.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) beginSearchSession();
+            if (hasFocus && getActivity() != null) beginSearchSession();
         });
 
         urlTv.setOnClickListener(v -> {
@@ -621,26 +619,18 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
                 Observable.fromArray(clear), (interval, item) -> item)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> postBeginSearchSession(item));
-
-        urlTv.showDropDown();
+                .subscribe(this::postBeginSearchSession);
     }
 
     private void postBeginSearchSession(ImageView item)
     {
         urlTv.setAdapter(adapter);
+        urlTv.showDropDown();
         if (item.getVisibility() == View.GONE)
         {
             expandCollapseView(item, true);
             KeyboardUtils.showKeyboard(urlTv);
         }
-
-        //Set Fragment after sometime
-        SearchFragment f = new SearchFragment();
-        f.setCallbacks(view -> {
-            cancelSearchSession();
-        });
-        attachFragment(f, SEARCH);
     }
 
     /**
@@ -745,10 +735,10 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
     }
 
     private void initViewModel() {
-        viewModel = ViewModelProviders.of(this, dappBrowserViewModelFactory)
+        viewModel = new ViewModelProvider(this, dappBrowserViewModelFactory)
                 .get(DappBrowserViewModel.class);
-        viewModel.defaultNetwork().observe(this, this::onDefaultNetwork);
-        viewModel.defaultWallet().observe(this, this::onDefaultWallet);
+        viewModel.defaultNetwork().observe(getViewLifecycleOwner(), this::onDefaultNetwork);
+        viewModel.defaultWallet().observe(getViewLifecycleOwner(), this::onDefaultWallet);
     }
 
     private void startBalanceListener()
@@ -767,7 +757,7 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
             symbol.setVisibility(View.VISIBLE);
             String newBalanceStr = BalanceUtils.getScaledValueFixed(new BigDecimal(realmToken.getBalance()), ETHER_DECIMALS, TOKEN_BALANCE_PRECISION);
             balance.setText(newBalanceStr);
-            symbol.setText(networkInfo.getSymbol());
+            symbol.setText(networkInfo.getShortName());
         });
     }
 
@@ -866,7 +856,7 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
                             break;
                         case C.DAPP_PREFIX_WALLETCONNECT:
                             //start walletconnect
-                            viewModel.handleWalletConnect(getContext(), url);
+                            if (getContext() != null) viewModel.handleWalletConnect(getContext(), url);
                             return true;
                         default:
                             break;

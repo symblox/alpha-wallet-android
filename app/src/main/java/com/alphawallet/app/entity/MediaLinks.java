@@ -18,6 +18,6 @@ public class MediaLinks
 
     public static final String VELASWALLET_TELEGRAM_URL = "https://t.me/symblox";
     public static final String VELASWALLET_TWITTER_URL = "https://twitter.com/symbloxdefi";
-    public static final String VELASWALLET_FAQ_URL = "https://help.symblox.io";
+    public static final String VELASWALLET_FAQ_URL = "https://symblox.io";
     public static final String VELASWALLET_WEBSITE_URL = "https://symblox.io";
 }

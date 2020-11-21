@@ -1,12 +1,11 @@
 package com.alphawallet.app.service;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.alphawallet.app.C;
+import androidx.annotation.Nullable;
+
 import com.alphawallet.app.entity.NetworkInfo;
 import com.alphawallet.app.entity.Transaction;
 import com.alphawallet.app.entity.TransactionMeta;
@@ -17,7 +16,9 @@ import com.alphawallet.app.repository.EthereumNetworkRepositoryType;
 import com.alphawallet.app.repository.PreferenceRepositoryType;
 import com.alphawallet.app.repository.TokenRepository;
 import com.alphawallet.app.repository.TransactionLocalSource;
+import com.alphawallet.token.entity.ContractAddress;
 
+import org.web3j.exceptions.MessageDecodingException;
 import org.web3j.protocol.Web3j;
 
 import java.math.BigInteger;
@@ -44,11 +45,18 @@ public class TransactionsService
     private final TransactionLocalSource transactionsCache;
     private final Context context;
     private String currentAddress;
+    private int currentChainIndex;
+    private boolean nftCheck;
+
+    private final static int TRANSACTION_DROPPED = -1;
+    private final static int TRANSACTION_SEEN = -2;
 
     @Nullable
     private Disposable fetchTransactionDisposable;
     @Nullable
     private Disposable eventTimer;
+    @Nullable
+    private Disposable erc20EventCheckCycle;
 
     public TransactionsService(TokensService tokensService,
                                PreferenceRepositoryType preferenceRepositoryType,
@@ -69,6 +77,9 @@ public class TransactionsService
 
     private void fetchTransactions()
     {
+        currentChainIndex = 0;
+        nftCheck = false;
+
         if (fetchTransactionDisposable != null && !fetchTransactionDisposable.isDisposed()) fetchTransactionDisposable.dispose();
         fetchTransactionDisposable = null;
         //reset transaction timers
@@ -76,6 +87,46 @@ public class TransactionsService
         {
             eventTimer = Observable.interval(0, 1, TimeUnit.SECONDS)
                     .doOnNext(l -> checkTransactionQueue()).subscribe();
+        }
+
+        if (erc20EventCheckCycle == null || erc20EventCheckCycle.isDisposed())
+        {
+            erc20EventCheckCycle = Observable.interval(2, 10, TimeUnit.SECONDS)
+                    .doOnNext(l -> checkTransactions()).subscribe();
+        }
+    }
+
+    public void startUpdateCycle()
+    {
+        if (eventTimer == null || eventTimer.isDisposed())
+        {
+            fetchTransactions();
+        }
+    }
+
+    /**
+     * Start the token transaction checker
+     * This uses the Etherscan API routes returning ERC20 and ERC721 token transfers, both incoming and outgoing.
+     */
+    private void checkTransactions()
+    {
+        List<Integer> filters = tokensService.getNetworkFilters();
+        if (currentChainIndex >= filters.size()) currentChainIndex = 0;
+        int chainId = filters.get(currentChainIndex);
+
+        transactionsClient.readTransactions(currentAddress, ethereumNetworkRepository.getNetworkByChain(chainId), tokensService, nftCheck)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(count -> { System.out.println("Received: " + count); }).isDisposed();
+
+        if (!nftCheck)
+        {
+            nftCheck = true;
+        }
+        else
+        {
+            nftCheck = false;
+            currentChainIndex++;
         }
     }
 
@@ -91,7 +142,7 @@ public class TransactionsService
                 if (t.isEthereum()) System.out.println("Transaction check for: " + t.tokenInfo.chainId + " (" + t.getNetworkName() + ") " + tick);
                 NetworkInfo network = ethereumNetworkRepository.getNetworkByChain(t.tokenInfo.chainId);
                 fetchTransactionDisposable =
-                        transactionsClient.storeNewTransactions(currentAddress, network, t.lastBlockCheck)
+                        transactionsClient.storeNewTransactions(currentAddress, network, t.getAddress(), t.lastBlockCheck)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(transactions -> onUpdateTransactions(transactions, t), this::onTxError);
@@ -138,27 +189,31 @@ public class TransactionsService
     {
         //got a new transaction
         fetchTransactionDisposable = null;
+        if (transactions.length == 0) return;
+
         Log.d("TRANSACTION", "Queried for " + token.tokenInfo.name + " : " + transactions.length + " Network transactions");
 
-        token.lastTxCheck = System.currentTimeMillis();
+        checkPendingTransactions(token.tokenInfo.chainId);
 
-        Transaction placeHolder = transactions.length > 0 ? transactions[transactions.length - 1] : null;
+        //now check for unknown tokens
+        checkTokens(transactions);
+    }
 
-        //The final transaction is the last transaction read, and will have the highest block number we read
-        if (placeHolder != null)
+    /**
+     * Check new tokens for any unknowns, then find the unknowns
+     * @param txList
+     */
+    private void checkTokens(Transaction[] txList)
+    {
+        for (int i = 0; i < txList.length - 1; i++)
         {
-            token.lastBlockCheck = Long.parseLong(placeHolder.blockNumber);
-            token.lastTxTime = placeHolder.timeStamp * 1000; //update last transaction received time
-
-            if (placeHolder.nonce == -1)
+            Transaction tx = txList[i];
+            if (!tx.hasError() && tx.hasData()) //is this a successful contract transaction?
             {
-                context.sendBroadcast(new Intent(C.RESET_TRANSACTIONS));
+                Token token = tokensService.getToken(tx.chainId, tx.to);
+                if (token == null) tokensService.addUnknownTokenToCheckPriority(new ContractAddress(tx.chainId, tx.to));
             }
         }
-
-        //update token details
-        transactionsClient.storeBlockRead(token, currentAddress);
-        checkPendingTransactions(token.tokenInfo.chainId);
     }
 
     public void changeWallet(Wallet newWallet)
@@ -204,22 +259,44 @@ public class TransactionsService
                 web3j.ethGetTransactionByHash(tx.hash).sendAsync().thenAccept(txDetails -> {
                     org.web3j.protocol.core.methods.response.Transaction fetchedTx = txDetails.getTransaction().orElseThrow(); //try to read the transaction data
                     //if transaction is complete; record it here
-                    if (fetchedTx.getBlockNumber() != null && fetchedTx.getBlockNumber().compareTo(BigInteger.ZERO) > 0)
+                    BigInteger blockNumber;
+                    try
                     {
-                        //get timestamp and write tx
-                        EventUtils.getBlockDetails(fetchedTx.getBlockHash(), web3j)
-                                .map(ethBlock -> transactionsCache.storeRawTx(new Wallet(currentWallet), txDetails, ethBlock.getBlock().getTimestamp().longValue()))
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe().isDisposed();
+                        blockNumber = fetchedTx.getBlockNumber();
+                    }
+                    catch (MessageDecodingException e)
+                    {
+                        blockNumber = BigInteger.valueOf(-1);
+                    }
+
+                    if (blockNumber.compareTo(BigInteger.ZERO) > 0)
+                    {
+                        //detect error and write to database
+                        web3j.ethGetTransactionReceipt(tx.hash).sendAsync().thenAccept(receipt -> {
+                            //get timestamp and write tx
+                            EventUtils.getBlockDetails(fetchedTx.getBlockHash(), web3j)
+                                    .map(ethBlock -> transactionsCache.storeRawTx(new Wallet(currentWallet), txDetails, ethBlock.getBlock().getTimestamp().longValue(), receipt.getResult().getStatus().equals("0x1")))
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe().isDisposed();
+
+                            }).exceptionally(throwable -> {
+                                throwable.printStackTrace();
+                                return null;
+                        });
+                    }
+                    else if (!tx.blockNumber.equals(String.valueOf(TRANSACTION_SEEN)))
+                    {
+                        //detected the tx in the pool, mark as seen
+                        transactionsCache.markTransactionBlock(currentAddress, tx.hash, TRANSACTION_SEEN);
                     }
                 }).exceptionally(throwable -> {
                     String c1 = throwable.getMessage(); //java.util.NoSuchElementException: No value present
-                    if (!TextUtils.isEmpty(c1) && c1.contains(NO_TRANSACTION_EXCEPTION))
+                    if (!TextUtils.isEmpty(c1) && c1.contains(NO_TRANSACTION_EXCEPTION) && tx.blockNumber.equals(String.valueOf(TRANSACTION_SEEN))) //we sighted this tx in the pool, now it's gone
                     {
                         //transaction is no longer in pool or on chain. Cause: dropped from mining pool
                         //mark transaction as dropped
-                        transactionsCache.markTransactionDropped(currentAddress, tx.hash);
+                        transactionsCache.markTransactionBlock(currentAddress, tx.hash, TRANSACTION_DROPPED);
                     }
                     return null;
                 });
