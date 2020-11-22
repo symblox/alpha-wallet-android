@@ -39,11 +39,11 @@ import static com.alphawallet.app.repository.EthereumNetworkRepository.VELAS_MAI
 public class SelectNetworkActivity extends BaseActivity {
     @Inject
     SelectNetworkViewModelFactory viewModelFactory;
-    private SelectNetworkViewModel viewModel;
-    private RecyclerView recyclerView;
-    private CustomAdapter adapter;
-    private boolean singleItem;
-    private String selectedChainId;
+    protected SelectNetworkViewModel viewModel;
+    protected RecyclerView recyclerView;
+    protected RecyclerView.Adapter adapter;
+    protected boolean singleItem;
+    protected String selectedChainId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,9 +52,7 @@ public class SelectNetworkActivity extends BaseActivity {
         setContentView(R.layout.activity_list);
         toolbar();
         setTitle(getString(R.string.select_active_networks));
-
-        viewModel = new ViewModelProvider(this, viewModelFactory)
-                .get(SelectNetworkViewModel.class);
+        setupViewModel();
 
         if (getIntent() != null) {
             singleItem = getIntent().getBooleanExtra(C.EXTRA_SINGLE_ITEM, false);
@@ -70,6 +68,11 @@ public class SelectNetworkActivity extends BaseActivity {
         recyclerView.addItemDecoration(new ListDivider(this));
     }
 
+    protected void setupViewModel() {
+        viewModel = new ViewModelProvider(this, viewModelFactory)
+                .get(SelectNetworkViewModel.class);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (singleItem) {
@@ -79,7 +82,7 @@ public class SelectNetworkActivity extends BaseActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void setupFilterList() {
+    protected void setupFilterList() {
         ArrayList<NetworkItem> list = new ArrayList<>();
         List<Integer> intList = Utils.intListToArray(selectedChainId);
         List<Integer> activeNetworks = viewModel.getActiveNetworks();
@@ -125,8 +128,8 @@ public class SelectNetworkActivity extends BaseActivity {
         handleSetNetworks();
     }
 
-    private void handleSetNetworks() {
-        Integer[] filterList = adapter.getSelectedItems();
+    protected void handleSetNetworks() {
+        Integer[] filterList = ((CustomAdapter)adapter).getSelectedItems();
         if (filterList.length == 0)
             filterList = EthereumNetworkRepository.addDefaultNetworks().toArray(new Integer[0]);
         if (singleItem) {

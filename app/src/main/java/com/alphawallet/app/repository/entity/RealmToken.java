@@ -191,7 +191,7 @@ public class RealmToken extends RealmObject {
         //check decimal integrity, if received a non-18 decimals, this is most likely an update correction from etherscan
         if (tokenInfo.decimals != decimals && (tokenInfo.decimals > 0 && (decimals == 0 || decimals == 18)))
         {
-            setName(tokenInfo.name);
+            setName(tokenInfo.getName());
             setSymbol(tokenInfo.symbol);
             setDecimals(tokenInfo.decimals);
         }

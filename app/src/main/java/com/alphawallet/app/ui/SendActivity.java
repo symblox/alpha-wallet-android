@@ -522,10 +522,10 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
 
         String symbol = token.getSymbol();
 
-        tokenSymbolText.setText(TextUtils.isEmpty(token.tokenInfo.name)
+        tokenSymbolText.setText(TextUtils.isEmpty(token.tokenInfo.getName())
                 ? symbol
-                : symbol.length() > 0 ? getString(R.string.token_name, token.tokenInfo.name, symbol)
-                    : token.tokenInfo.name);
+                : symbol.length() > 0 ? getString(R.string.token_name, token.tokenInfo.getName(), symbol)
+                    : token.tokenInfo.getName());
 
         TokenInfo tokenInfo = token.tokenInfo;
         BigDecimal decimalDivisor = new BigDecimal(Math.pow(10, tokenInfo.decimals));

@@ -117,7 +117,7 @@ public class TokensService
             if (t != null && getToken(t.chainId, t.address) == null)
             {
                 queryUnknownTokensDisposable = tokenRepository.update(t.address, t.chainId).toObservable() //fetch tokenInfo
-                        .filter(tokenInfo -> tokenInfo.name != null)
+                        .filter(tokenInfo -> tokenInfo.getName() != null)
                         .map(tokenInfo -> { tokenInfo.isEnabled = false; return tokenInfo; }) //set default visibility to false
                         .flatMap(tokenInfo -> tokenRepository.determineCommonType(tokenInfo).toObservable()
                             .flatMap(contractType -> tokenRepository.addToken(new Wallet(currentAddress), tokenInfo, contractType).toObservable()))

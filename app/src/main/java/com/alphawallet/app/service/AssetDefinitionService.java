@@ -540,7 +540,7 @@ public class AssetDefinitionService implements ParseResult, AttributeInterface
             case "name":
                 if (hasNoParams)
                 {
-                    transactionResult.result = checkToken.tokenInfo.name;
+                    transactionResult.result = checkToken.tokenInfo.getName();
                     transactionResult.resultTime = checkToken.updateBlancaTime;
                     optimised = true;
                 }
@@ -833,6 +833,9 @@ public class AssetDefinitionService implements ParseResult, AttributeInterface
 
     public String getTokenName(int chainId, String address, int count)
     {
+        if (chainId == EthereumNetworkBase.VELAS_MAINNET_ID) {
+            return EthereumNetworkBase.velasNetworkInfo.name;
+        }
         String tokenName = null;
         if (address.equalsIgnoreCase(tokensService.getCurrentAddress())) address = "ethereum";
         try (Realm realm = realmManager.getRealmInstance(ASSET_DEFINITION_DB))

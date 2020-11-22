@@ -191,7 +191,7 @@ public class TransactionsService
         fetchTransactionDisposable = null;
         if (transactions.length == 0) return;
 
-        Log.d("TRANSACTION", "Queried for " + token.tokenInfo.name + " : " + transactions.length + " Network transactions");
+        Log.d("TRANSACTION", "Queried for " + token.tokenInfo.getName() + " : " + transactions.length + " Network transactions");
 
         checkPendingTransactions(token.tokenInfo.chainId);
 

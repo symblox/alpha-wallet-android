@@ -151,7 +151,7 @@ public class TokenRepository implements TokenRepositoryType {
                         case ERC721:
                         case ERC721_LEGACY:
                             List<Asset> erc721Balance = t.getTokenAssets(); //add balance from Opensea
-                            if (TextUtils.isEmpty(tInfo.name + tInfo.symbol)) tInfo = new TokenInfo(tInfo.address, " ", " ", tInfo.decimals, tInfo.isEnabled, tInfo.chainId); //ensure we don't keep overwriting this
+                            if (TextUtils.isEmpty(tInfo.getName() + tInfo.symbol)) tInfo = new TokenInfo(tInfo.address, " ", " ", tInfo.decimals, tInfo.isEnabled, tInfo.chainId); //ensure we don't keep overwriting this
                             t = new ERC721Token(tInfo, erc721Balance, System.currentTimeMillis(), t.getNetworkName(), type);
                             tokens[i] = t;
                             break;
@@ -532,7 +532,7 @@ public class TokenRepository implements TokenRepositoryType {
                         balance = getEthBalance(wallet, tInfo.chainId);
                         break;
                     case NOT_SET:
-                        if (token.tokenInfo.name != null && token.tokenInfo.name.length() > 0)
+                        if (token.tokenInfo.getName() != null && token.tokenInfo.getName().length() > 0)
                         {
                             Log.d(TAG, "NOT SET: " + token.getFullName());
                         }
@@ -1348,7 +1348,7 @@ public class TokenRepository implements TokenRepositoryType {
     {
         NetworkInfo networkInfo = ethereumNetworkRepository.getNetworkByChain(tokenInfo.chainId);
         ContractType checked = TokensService.checkInterfaceSpec(tokenInfo.chainId, tokenInfo.address);
-        if (tokenInfo.name == null && tokenInfo.symbol == null)
+        if (tokenInfo.getName() == null && tokenInfo.symbol == null)
         {
             return Single.fromCallable(() -> ContractType.NOT_SET);
         }

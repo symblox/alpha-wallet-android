@@ -4,12 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 
+import com.alphawallet.app.repository.EthereumNetworkBase;
 import com.alphawallet.app.ui.AddTokenActivity;
 import com.alphawallet.app.util.Utils;
 
 public class TokenInfo implements Parcelable {
     public final String address;
-    public final String name;
+    private final String name;
     public final String symbol;
     public final int decimals;
     public final int chainId;
@@ -84,5 +85,12 @@ public class TokenInfo implements Parcelable {
             layout.chainName.setText(chainName);
             Utils.setChainColour(layout.chainName, chainId);
         }
+    }
+
+    public String getName() {
+        if (chainId == EthereumNetworkBase.VELAS_MAINNET_ID) {
+            return EthereumNetworkBase.velasNetworkInfo.name;
+        }
+        return name;
     }
 }

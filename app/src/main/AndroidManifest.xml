@@ -261,6 +261,10 @@
             android:label="Select Network Filters" />
 
         <activity
+            android:name=".ui.SelectActiveNetworkActivity"
+            android:label="Select Network Filters" />
+
+        <activity
             android:name=".ui.TokenManagementActivity"
             android:label="Manage Tokens" />
 

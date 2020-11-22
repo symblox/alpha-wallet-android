@@ -6,9 +6,9 @@ package com.alphawallet.ethereum;
  * keep it here */
 
 public class NetworkInfo {
-    public final String name;
+    public String name;
     public final String symbol;
-    public final String rpcServerUrl;
+    public String rpcServerUrl;
     public final String etherscanUrl; // This is used by the Transaction Detail page for the user to visit a website with detailed transaction information
     public final int chainId;
     public final boolean isMainNetwork;
@@ -27,5 +27,6 @@ public class NetworkInfo {
         this.chainId = chainId;
         this.isMainNetwork = isMainNetwork;
     }
+
 
 }

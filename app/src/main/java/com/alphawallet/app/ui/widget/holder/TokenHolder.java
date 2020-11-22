@@ -126,7 +126,6 @@ public class TokenHolder extends BinderViewHolder<TokenCardMeta> implements View
             String nameValue = token.getStringBalance() + " " + tokenName;
             balanceEth.setText(nameValue);
             balanceCurrency.setText(EMPTY_BALANCE);
-
             primaryElement = false;
 
             tokenIcon.bindData(token, assetDefinition);

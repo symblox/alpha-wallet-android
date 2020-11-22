@@ -265,7 +265,7 @@ public class ImportTokenViewModel extends BaseViewModel
     //4. Receive token information from blockchain query
     private void onTokensSetup(TokenInfo tokenInfo, ContractType spec)
     {
-        if (tokenInfo != null && tokenInfo.name != null)
+        if (tokenInfo != null && tokenInfo.getName() != null)
         {
             TokenFactory tf = new TokenFactory();
             NetworkInfo network = ethereumNetworkRepository.getNetworkByChain(tokenInfo.chainId);

@@ -40,4 +40,7 @@ public interface PreferenceRepositoryType {
 
     String getUserPreferenceLocale();
     void setUserPreferenceLocale(String locale);
+
+    String getVelasNodeSelected();
+    void setVelasNodeSelected(String selectedNode);
 }

@@ -70,7 +70,7 @@ public class TokensRealmSource implements TokenLocalSource {
     {
         return Single.fromCallable(() -> {
             for (Token token : items) {
-                if (token.tokenInfo != null && token.tokenInfo.name != null && !token.tokenInfo.name.equals(EXPIRED_CONTRACT) && token.tokenInfo.symbol != null)
+                if (token.tokenInfo != null && token.tokenInfo.getName() != null && !token.tokenInfo.getName().equals(EXPIRED_CONTRACT) && token.tokenInfo.symbol != null)
                 {
                     saveTokenLocal(wallet, token);
                 }
@@ -137,7 +137,7 @@ public class TokensRealmSource implements TokenLocalSource {
             {
                 realm.executeTransaction(instance -> {
                     realmToken.setInterfaceSpec(type.ordinal());
-                    realmToken.setName(token.tokenInfo.name);
+                    realmToken.setName(token.tokenInfo.getName());
                     realmToken.setSymbol(token.tokenInfo.symbol);
                 });
             }
@@ -503,7 +503,7 @@ public class TokensRealmSource implements TokenLocalSource {
         {
             Log.d(TAG, "Save New Token: " + token.getFullName() + " :" + token.tokenInfo.address);
             realmToken = realm.createObject(RealmToken.class, databaseKey);
-            realmToken.setName(token.tokenInfo.name);
+            realmToken.setName(token.tokenInfo.getName());
             realmToken.setSymbol(token.tokenInfo.symbol);
             realmToken.setDecimals(token.tokenInfo.decimals);
             realmToken.setUpdateTime(token.updateBlancaTime);
@@ -630,7 +630,7 @@ public class TokensRealmSource implements TokenLocalSource {
     private List<Asset> getERC721Assets(List<String> keys, Realm realm, Token token)
     {
         List<Asset> assets = new ArrayList<>();
-        AssetContract contract = new AssetContract(token.tokenInfo.address, token.tokenInfo.name,
+        AssetContract contract = new AssetContract(token.tokenInfo.address, token.tokenInfo.getName(),
                                                    token.tokenInfo.symbol, token.getInterfaceSpec().toString());
 
         for (String key : keys)

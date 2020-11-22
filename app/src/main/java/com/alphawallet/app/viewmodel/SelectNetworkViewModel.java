@@ -21,6 +21,14 @@ public class SelectNetworkViewModel extends BaseViewModel {
         this.tokensService = tokensService;
     }
 
+    public int getVelasIdNodeSelected() {
+        return networkRepository.getVelasIdSelected();
+    }
+
+    public NetworkInfo[] getVelasNetworkList() {
+        return networkRepository.getVelasNetworkList();
+    }
+
     public NetworkInfo[] getNetworkList() {
         return networkRepository.getAvailableNetworkList();
     }
