@@ -114,8 +114,8 @@ public class TransactionDetailActivity extends BaseActivity implements StandardF
         CopyTextView fromValue = findViewById(R.id.from);
         CopyTextView txHashView = findViewById(R.id.txn_hash);
 
-        fromValue.setText(transaction.from != null ? transaction.vlxFromAddress() : "");
-        toValue.setText(transaction.to != null ? transaction.vlxToAddress() : "");
+        fromValue.setText(transaction.from != null ? transaction.fromAddress() : "");
+        toValue.setText(transaction.to != null ? transaction.toAddress() : "");
         txHashView.setText(transaction.hash != null ? transaction.hash : "");
         ((TextView) findViewById(R.id.txn_time)).setText(localiseUnixTime(transaction.timeStamp));
 

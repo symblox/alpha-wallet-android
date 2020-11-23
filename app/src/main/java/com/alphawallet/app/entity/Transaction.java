@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.tokens.Token;
+import com.alphawallet.app.repository.EthereumNetworkBase;
 import com.alphawallet.app.repository.EthereumNetworkRepository;
 import com.alphawallet.app.repository.entity.RealmAuxData;
 import com.alphawallet.app.ui.widget.entity.StatusType;
@@ -375,16 +376,24 @@ public class Transaction implements Parcelable {
 				|| operations.length == 0 ? null : operations[0].contract;
     }
 
-	public String vlxFromAddress() {
-		if (!TextUtils.isEmpty(from) && Hex.containsHexPrefix(from)) {
-			return VelasUtils.ethToVlx(from);
+	public String fromAddress() {
+		if (EthereumNetworkBase.isVelasNetwork(chainId)) {
+			if (!TextUtils.isEmpty(from) && Hex.containsHexPrefix(from)) {
+				return VelasUtils.ethToVlx(from);
+			}
+		} else if (VelasUtils.isValidVlxAddress(from)) {
+			return VelasUtils.vlxToEth(from);
 		}
 		return from;
 	}
 
-	public String vlxToAddress() {
-		if (!TextUtils.isEmpty(to) && Hex.containsHexPrefix(to)) {
-			return VelasUtils.ethToVlx(to);
+	public String toAddress() {
+		if (EthereumNetworkBase.isVelasNetwork(chainId)) {
+			if (!TextUtils.isEmpty(to) && Hex.containsHexPrefix(to)) {
+				return VelasUtils.ethToVlx(to);
+			}
+		} else if (VelasUtils.isValidVlxAddress(to)) {
+			return VelasUtils.vlxToEth(to);
 		}
 		return to;
 	}

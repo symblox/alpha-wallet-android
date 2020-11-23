@@ -365,6 +365,10 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         onNetworkChangedListeners.add(onNetworkChanged);
     }
 
+    public static boolean isVelasNetwork(int chainId) {
+        return (chainId == VELAS_MAINNET_ID || chainId == VELAS_CHINA_MAINNET_ID || chainId == VELAS_TESTNET_ID);
+    }
+
     public static boolean hasRealValue(int chainId)
     {
         switch (chainId)
@@ -489,7 +493,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
             case BINANCE_TEST_ID:
                 return BINANCE_TEST_RPC_URL;
             case VELAS_MAINNET_ID:
-                return VELAS_RPC_URL;
+                return EthereumNetworkBase.velasNetworkInfo.rpcServerUrl;
             case VELAS_TESTNET_ID:
                 return VELAS_TEST_RPC_URL;
             default:
