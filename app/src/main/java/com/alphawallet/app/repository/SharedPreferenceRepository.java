@@ -23,6 +23,8 @@ public class SharedPreferenceRepository implements PreferenceRepositoryType {
     public static final String USER_LOCALE_PREF = "user_locale_pref";
     public static final String HIDE_ZERO_BALANCE_TOKENS = "hide_zero_balance_tokens";
 
+    public static final String VELAS_NODE_SELECTED = "velas_node_selected";
+
     private final SharedPreferences pref;
 
     public SharedPreferenceRepository(Context context) {
@@ -132,5 +134,15 @@ public class SharedPreferenceRepository implements PreferenceRepositoryType {
     public void setUserPreferenceLocale(String locale)
     {
         pref.edit().putString(USER_LOCALE_PREF, locale).apply();
+    }
+
+    @Override
+    public String getVelasNodeSelected() {
+        return pref.getString(VELAS_NODE_SELECTED, "");
+    }
+
+    @Override
+    public void setVelasNodeSelected(String selectedNode) {
+        pref.edit().putString(VELAS_NODE_SELECTED, selectedNode).apply();
     }
 }

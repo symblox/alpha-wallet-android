@@ -240,7 +240,7 @@ public class Token implements Parcelable, Comparable<Token>
     {
         if (isTerminated()) return TokensService.EXPIRED_CONTRACT;
         if (isBad()) return TokensService.UNKNOWN_CONTRACT;
-        String name = tokenInfo.name == null ? "" : tokenInfo.name;
+        String name = tokenInfo.getName() == null ? "" : tokenInfo.getName();
         String symbol = (tokenInfo.symbol == null || tokenInfo.symbol.length() == 0) ? "" : " (" + tokenInfo.symbol.toUpperCase() + ")";
         return name + symbol;
     }
@@ -408,12 +408,12 @@ public class Token implements Parcelable, Comparable<Token>
         if (contractType == null || contractType.ordinal() != realmToken.getInterfaceSpec()) return true;
         String currentState = realmToken.getBalance();
         if (currentState == null) return true;
-        if (tokenInfo.name != null && realmToken.getName() == null) return true; //signal to update database if correct name has been fetched (node timeout etc)
-        if (tokenInfo.name == null && realmToken.getName() != null) return true;
+        if (tokenInfo.getName() != null && realmToken.getName() == null) return true; //signal to update database if correct name has been fetched (node timeout etc)
+        if (tokenInfo.getName() == null && realmToken.getName() != null) return true;
         if (tokenInfo.symbol == null && realmToken.getSymbol() != null) return true;
-        if (tokenInfo.name != null && realmToken.getName() != null) return true;
+        if (tokenInfo.getName() != null && realmToken.getName() != null) return true;
         if (tokenInfo.symbol != null && realmToken.getSymbol() == null) return true;
-        if (tokenInfo.name != null && (!tokenInfo.name.equals(realmToken.getName()) || !tokenInfo.symbol.equals(realmToken.getSymbol()))) return true;
+        if (tokenInfo.getName() != null && (!tokenInfo.getName().equals(realmToken.getName()) || !tokenInfo.symbol.equals(realmToken.getSymbol()))) return true;
         String currentBalance = getFullBalance();
         return !currentState.equals(currentBalance);
     }
@@ -441,7 +441,7 @@ public class Token implements Parcelable, Comparable<Token>
 
     public boolean isBad()
     {
-        return tokenInfo == null || (tokenInfo.symbol == null && tokenInfo.name == null);
+        return tokenInfo == null || (tokenInfo.symbol == null && tokenInfo.getName() == null);
     }
 
     public boolean checkTokenWallet(String address)
@@ -673,12 +673,12 @@ public class Token implements Parcelable, Comparable<Token>
         //see if this token is covered by any contract
         if (assetService.hasDefinition(tokenInfo.chainId, tokenInfo.address))
         {
-            if (tokenInfo.name != null) return tokenInfo.name;
+            if (tokenInfo.getName() != null) return tokenInfo.getName();
             else return assetService.getAssetDefinition(tokenInfo.chainId, getAddress()).getTokenName(count);
         }
         else
         {
-            return tokenInfo.name;
+            return tokenInfo.getName();
         }
     }
 
@@ -709,7 +709,7 @@ public class Token implements Parcelable, Comparable<Token>
 
     public String getTokenTitle()
     {
-        return tokenInfo.name;
+        return tokenInfo.getName();
     }
 
     public boolean isERC875() { return false; }
@@ -750,7 +750,7 @@ public class Token implements Parcelable, Comparable<Token>
 
     public String getShortName() {
         if (isTerminated() || isBad()) return "";
-        return tokenInfo.name != null ? tokenInfo.name : tokenInfo.symbol != null ? tokenInfo.symbol : "";
+        return tokenInfo.getName() != null ? tokenInfo.getName() : tokenInfo.symbol != null ? tokenInfo.symbol : "";
     }
 
     public boolean groupWithToken(TicketRange currentRange, TicketRangeElement e, long currentTime)
@@ -793,7 +793,7 @@ public class Token implements Parcelable, Comparable<Token>
     public int hashCode()
     {
         int hash = 7;
-        hash = 17 * hash + (this.tokenInfo.name != null ? this.tokenInfo.name.hashCode() : 0);
+        hash = 17 * hash + (this.tokenInfo.getName() != null ? this.tokenInfo.getName().hashCode() : 0);
         return hash;
     }
 

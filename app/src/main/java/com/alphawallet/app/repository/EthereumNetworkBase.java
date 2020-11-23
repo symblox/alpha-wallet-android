@@ -3,6 +3,8 @@ package com.alphawallet.app.repository;
 /* Please don't add import android at this point. Later this file will be shared
  * between projects including non-Android projects */
 
+import android.text.TextUtils;
+
 import com.alphawallet.app.BuildConfig;
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
@@ -55,7 +57,9 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     //Fallback nodes: these nodes are used if there's no Amberdata key, and also as a fallback in case the primary node times out while attempting a call
     public static final String MAINNET_RPC_URL = "https://mainnet.infura.io/v3/" + getInfuraKey();
     public static final String RINKEBY_RPC_URL = "https://rinkeby.infura.io/v3/" + getInfuraKey();
-    public static final String VELAS_RPC_URL = "https://rpc.symblox.net";
+    public static final String VELAS_CHINA_NODE_RPC_URL = "https://rpc.symblox.net";
+    public static final String VELAS_RPC_URL = "https://explorer.velas.com/rpc";
+
     public static final String VELAS_TEST_RPC_URL = "https://explorer.testnet.veladev.net/rpc";
     //public static final String VELAS_TEST_RPC_URL = "https://tn.yopta.net";
 
@@ -94,7 +98,17 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     public static final int BINANCE_TEST_ID = 97;
     public static final int BINANCE_MAIN_ID = 56;
     public static final int VELAS_MAINNET_ID = 106;
+    public static final int VELAS_CHINA_MAINNET_ID = 10666666;
     public static final int VELAS_TESTNET_ID = 111;
+
+    private static final String VELAS_NODE = "VELAS_NODE";
+    private static final String VELAS_CHINA_NODE = "VELAS_CHINA_NODE";
+
+    public static final NetworkInfo velasNetworkInfo = new NetworkInfo(C.VELAS_MAINNET_NETWORK_NAME, C.VELAS_SYMBOL,
+            VELAS_RPC_URL,
+            "https://explorer.velas.com/tx/", VELAS_MAINNET_ID, true,
+            "https://explorer.velas.com/rpc",
+            "https://explorer.velas.com/");
 
     final Map<Integer, NetworkInfo> networkMap;
 
@@ -201,8 +215,8 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         {
             networkMap.put(network.chainId, network);
         }
-
         updatedTickers = false;
+        updateVelasNetwork();
     }
 
     private void addNetworks(NetworkInfo[] networks, List<NetworkInfo> result, boolean withValue)
@@ -278,8 +292,28 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     @Override
     public void setFilterNetworkList(int[] networkList)
     {
+        for (int i = 0; i < networkList.length; i++) {
+            if (networkList[i] == VELAS_MAINNET_ID) {
+                preferences.setVelasNodeSelected(VELAS_NODE);
+                break;
+            } else if (networkList[i] == VELAS_CHINA_MAINNET_ID) {
+                networkList[i] = VELAS_MAINNET_ID;
+                preferences.setVelasNodeSelected(VELAS_CHINA_NODE);
+                break;
+            }
+        }
+        updateVelasNetwork();
         String store = Utils.intArrayToString(networkList);
-        preferences.setNetworkFilterList(store.toString());
+        preferences.setNetworkFilterList(store);
+    }
+
+    private void updateVelasNetwork() {
+        NetworkInfo velas = getNetworkByChain(VELAS_MAINNET_ID);
+        velas.name = (preferences.getVelasNodeSelected().equals(VELAS_CHINA_NODE)) ? C.VELAS_MAINNET_CHINA_NETWORK_NAME : C.VELAS_MAINNET_NETWORK_NAME;
+        velas.rpcServerUrl = (preferences.getVelasNodeSelected().equals(VELAS_CHINA_NODE)) ? VELAS_CHINA_NODE_RPC_URL : VELAS_RPC_URL;
+
+        EthereumNetworkBase.velasNetworkInfo.name = velas.name;
+        EthereumNetworkBase.velasNetworkInfo.rpcServerUrl = velas.rpcServerUrl;
     }
 
     @Override
@@ -290,6 +324,35 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         for (OnNetworkChangeListener listener : onNetworkChangedListeners) {
             listener.onNetworkChanged(networkInfo);
         }
+    }
+
+    @Override
+    public int getVelasIdSelected() {
+        return isVelasNodeSelected() ? VELAS_MAINNET_ID : VELAS_CHINA_MAINNET_ID;
+    }
+
+    @Override
+    public boolean isVelasNodeSelected() {
+        return !preferences.getVelasNodeSelected().equalsIgnoreCase(VELAS_CHINA_NODE);
+    }
+
+    @Override
+    public NetworkInfo[] getVelasNetworkList() {
+        List<NetworkInfo> networks = new ArrayList<>();
+        NetworkInfo networkInfo = new NetworkInfo(C.VELAS_MAINNET_NETWORK_NAME, C.VELAS_SYMBOL,
+                VELAS_RPC_URL,
+                "https://explorer.velas.com/tx/", VELAS_MAINNET_ID, true,
+                "https://explorer.velas.com/rpc",
+                "https://explorer.velas.com/");
+        networks.add(networkInfo);
+
+        networkInfo = new NetworkInfo(C.VELAS_MAINNET_CHINA_NETWORK_NAME, C.VELAS_SYMBOL,
+                VELAS_CHINA_NODE_RPC_URL,
+                "https://explorer.velas.com/tx/", VELAS_CHINA_MAINNET_ID, true,
+                "https://explorer.velas.com/rpc",
+                "https://explorer.velas.com/");
+        networks.add(networkInfo);
+        return networks.toArray(new NetworkInfo[0]);
     }
 
     @Override
@@ -321,6 +384,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     }
 
     public static String getSecondaryNodeURL(int networkId) {
+
         switch (networkId)
         {
             case MAINNET_ID:
@@ -350,7 +414,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
             case BINANCE_TEST_ID:
                 return BINANCE_TEST_FALLBACK_RPC_URL;
             case VELAS_MAINNET_ID:
-                return VELAS_RPC_URL;
+                return EthereumNetworkBase.velasNetworkInfo.rpcServerUrl;
             case VELAS_TESTNET_ID:
                 return VELAS_TEST_RPC_URL;
             default:
@@ -452,7 +516,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
             case GOERLI_ID:
                 return "https://goerli.infura.io/v3/" + BuildConfig.XInfuraAPI;
             case VELAS_MAINNET_ID:
-                return VELAS_RPC_URL;
+                return EthereumNetworkBase.velasNetworkInfo.rpcServerUrl;
             default:
                 return getSecondaryNodeURL(networkId);
         }

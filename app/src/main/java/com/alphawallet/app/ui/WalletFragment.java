@@ -595,7 +595,7 @@ public class WalletFragment extends BaseFragment implements
 
                     if (getContext() != null) {
                         Snackbar snackbar = Snackbar
-                                .make(viewHolder.itemView, token.tokenInfo.name + " " + getContext().getString(R.string.token_hidden), Snackbar.LENGTH_LONG)
+                                .make(viewHolder.itemView, token.tokenInfo.getName() + " " + getContext().getString(R.string.token_hidden), Snackbar.LENGTH_LONG)
                                 .setAction(getString(R.string.action_snackbar_undo), view -> {
                                     viewModel.setTokenEnabled(token, true);
                                     //adapter.updateToken(token.tokenInfo.chainId, token.getAddress(), true);

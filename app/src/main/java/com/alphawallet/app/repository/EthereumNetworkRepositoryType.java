@@ -22,6 +22,9 @@ public interface EthereumNetworkRepositoryType {
 
 	void setDefaultNetworkInfo(NetworkInfo networkInfo);
 
+	int getVelasIdSelected();
+	boolean isVelasNodeSelected();
+	NetworkInfo[] getVelasNetworkList();
 	NetworkInfo[] getAvailableNetworkList();
 
 	void addOnChangeDefaultNetwork(OnNetworkChangeListener onNetworkChanged);

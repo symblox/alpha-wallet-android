@@ -49,7 +49,7 @@ public class TokenDescriptionHolder extends BinderViewHolder<Token>
     @Override
     public void bind(@Nullable Token token, @NonNull Bundle addition) {
         count.setText(String.valueOf(assetCount));
-        String tokenName = token.tokenInfo.name;
+        String tokenName = token.tokenInfo.getName();
         if (assetService.getAssetDefinition(token.tokenInfo.chainId, token.getAddress()) != null)
         {
             String nameCandidate = assetService.getAssetDefinition(token.tokenInfo.chainId, token.getAddress()).getTokenName(token.getTicketCount());

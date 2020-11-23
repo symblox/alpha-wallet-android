@@ -161,7 +161,7 @@ public class OpenseaService {
      */
     private boolean checkClassification(Token checkToken, Asset asset)
     {
-        if (TextUtils.isEmpty(checkToken.tokenInfo.name + checkToken.tokenInfo.symbol)) return false; //empty token name; suspicious
+        if (TextUtils.isEmpty(checkToken.tokenInfo.getName() + checkToken.tokenInfo.symbol)) return false; //empty token name; suspicious
         if (checkToken.isERC721() && asset.getTraits().size() == 0 && TextUtils.isEmpty(asset.getDescription())) return false; //ERC721 with no traits or description; could be erc721 ticket
         return !checkToken.isERC721Ticket() || asset.getTraits().size() == 0 || TextUtils.isEmpty(asset.getDescription()); //ERC721Ticket with traits or description
     }

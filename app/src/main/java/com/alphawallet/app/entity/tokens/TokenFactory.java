@@ -133,7 +133,7 @@ public class TokenFactory
                 String[] split = tokenInfo.address.split("-");
                 thisToken = new Token(
                         new TokenInfo(split[0],
-                                      tokenInfo.name,
+                                      tokenInfo.getName(),
                                       tokenInfo.symbol,
                                       tokenInfo.decimals,
                                       true,
@@ -145,7 +145,7 @@ public class TokenFactory
             default:
                 thisToken = new Token(
                         new TokenInfo(tokenInfo.address,
-                                      tokenInfo.name,
+                                      tokenInfo.getName(),
                                       tokenInfo.symbol,
                                       tokenInfo.decimals,
                                       true,

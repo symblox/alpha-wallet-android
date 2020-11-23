@@ -69,7 +69,7 @@ public abstract class EthereumNetworkBase { // implements EthereumNetworkReposit
                     BINANCE_TEST_ID, false));
             put(BINANCE_MAIN_ID, new NetworkInfo("Binance", "BNB", BINANCE_MAIN_RPC_URL, "https://explorer.binance.org/smart/tx/",
                     BINANCE_MAIN_ID, false));
-            put(VELAS_MAINNET_ID, new NetworkInfo("Velas China", "VLX", VELAS_MAIN_RPC_URL, "https://explorer.velas.com/",
+            put(VELAS_MAINNET_ID, new NetworkInfo("Velas", "VLX", VELAS_MAIN_RPC_URL, "https://explorer.velas.com/",
                     ARTIS_TAU1_ID, true));
             put(VELAS_TESTNET_ID, new NetworkInfo("Velas Testnet", "VLX", VELAS_TEST_RPC_URL, "https://explorer.testnet.veladev.net/",
                     ARTIS_TAU1_ID, false));

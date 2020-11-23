@@ -63,7 +63,7 @@ public class TokenGridHolder extends BinderViewHolder<TokenCardMeta> {
                         Glide.with(getContext())
                                 .load(firstAsset.getImagePreviewUrl())
                                 .into(imageIcon);
-                        name.setText(token.tokenInfo.name);
+                        name.setText(token.tokenInfo.getName());
                         textIcon.setVisibility(View.GONE);
                         imageIcon.setVisibility(View.VISIBLE);
                     } else {
@@ -76,7 +76,7 @@ public class TokenGridHolder extends BinderViewHolder<TokenCardMeta> {
                 name.setText(tokenName);
                 setupIcon(token);
             } else {
-                name.setText(token.tokenInfo.name);
+                name.setText(token.tokenInfo.getName());
                 setupIcon(token);
             }
 
@@ -92,7 +92,7 @@ public class TokenGridHolder extends BinderViewHolder<TokenCardMeta> {
         imageIcon.setVisibility(View.GONE);
         textIcon.setVisibility(View.VISIBLE);
         textIcon.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), Utils.getChainColour(token.tokenInfo.chainId)));
-        textIcon.setText(Utils.getIconisedText(token.tokenInfo.name));
+        textIcon.setText(Utils.getIconisedText(token.tokenInfo.getName()));
     }
 
     public void setOnTokenClickListener(OnTokenClickListener onTokenClickListener) {
