@@ -33,6 +33,7 @@ import com.alphawallet.app.ui.zxing.FullScannerFragment;
 import com.alphawallet.app.ui.zxing.QRScanningActivity;
 import com.alphawallet.app.util.QRParser;
 import com.alphawallet.app.util.Utils;
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.app.viewmodel.ActivityViewModel;
 import com.alphawallet.app.viewmodel.AddTokenViewModel;
 import com.alphawallet.app.viewmodel.AddTokenViewModelFactory;
@@ -146,9 +147,12 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 //wait until we have an ethereum address
-                String check = inputAddressView.getAddress().toLowerCase();
+                String check = inputAddressView.getAddress();
                 //process the address first
-                if (check.length() > 39) {
+                if (check.length() > addressLengthExpected()) {
+                    if (EthereumNetworkBase.isVelasNetwork(networkInfo.chainId) && VelasUtils.isValidVlxAddress(check)) {
+                        check = VelasUtils.vlxToEth(check);
+                    }
                     onCheck(check);
                 }
             }
@@ -163,6 +167,10 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
 
         setupNetwork(EthereumNetworkRepository.getOverrideToken().chainId);
         viewModel.prepare();
+    }
+
+    private int addressLengthExpected() {
+        return EthereumNetworkBase.isVelasNetwork(networkInfo.chainId) ? 33 : 39;
     }
 
     private void onTokenType(Token contractTypeToken)
@@ -199,7 +207,11 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         super.onResume();
         if (contractAddress != null)
         {
-            inputAddressView.setAddress(contractAddress.toLowerCase());
+            if (EthereumNetworkBase.isVelasNetwork(networkInfo.chainId)) {
+                inputAddressView.setAddress(VelasUtils.ethToVlx(contractAddress));
+            } else {
+                inputAddressView.setAddress(contractAddress.toLowerCase());
+            }
             contractAddress = null;
         }
     }
@@ -266,7 +278,26 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
 
     private void onTokenInfo(TokenInfo tokenInfo)
     {
-        tokenInfo.addTokenSetupPage(this, viewModel.getNetworkInfo(tokenInfo.chainId).getShortName());
+        updateLayoutWithTokenInfo(tokenInfo);
+    }
+
+    private void updateLayoutWithTokenInfo(TokenInfo tokenInfo) {
+        if (EthereumNetworkBase.isVelasNetwork(tokenInfo.chainId)) {
+            inputAddressView.setAddress(VelasUtils.ethToVlx(tokenInfo.address));
+        } else {
+            inputAddressView.setAddress(tokenInfo.address);
+        }
+        symbolInputView.setText(tokenInfo.symbol);
+        decimalsInputView.setText(String.valueOf(tokenInfo.decimals));
+        nameInputview.setText(tokenInfo.getName());
+        ticketLayout.setVisibility(View.GONE);
+
+        if (chainName != null)
+        {
+            chainName.setVisibility(View.VISIBLE);
+            chainName.setText(viewModel.getNetworkInfo(tokenInfo.chainId).getShortName());
+            Utils.setChainColour(chainName, networkInfo.chainId);
+        }
     }
 
     private void onError(ErrorEnvelope errorEnvelope) {
@@ -311,6 +342,19 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         }
     }
 
+    private void onCheckVLXAddress(String address) {
+        if (!VelasUtils.isValidVlxAddress(address)) {
+            return;
+        }
+        String ethAddress = VelasUtils.vlxToEth(address);
+        if (isValidAddress(ethAddress) && !ethAddress.equals(lastCheck)) {
+            lastCheck = ethAddress;
+            chainName.setVisibility(View.GONE);
+            showProgress(true);
+            viewModel.testNetworks(ethAddress, networkInfo);
+        }
+    }
+
     private void saveFinal()
     {
         boolean isValid = true;
@@ -321,6 +365,9 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
 
         int decimals = 0;
 
+        if (VelasUtils.isValidVlxAddress(address)) {
+            address = VelasUtils.vlxToEth(address);
+        }
         if (TextUtils.isEmpty(address)) {
             inputAddressView.setError(getString(R.string.error_field_required));
             isValid = false;
@@ -477,6 +524,9 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
                         if (extracted_address == null) {
                             Toast.makeText(this, R.string.toast_qr_code_no_address, Toast.LENGTH_SHORT).show();
                             return;
+                        }
+                        if (EthereumNetworkBase.isVelasNetwork(networkInfo.chainId)) {
+                            extracted_address = VelasUtils.ethToVlx(extracted_address);
                         }
                         inputAddressView.setAddress(extracted_address);
                     }
