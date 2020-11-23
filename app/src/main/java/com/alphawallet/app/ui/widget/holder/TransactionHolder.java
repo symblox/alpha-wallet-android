@@ -19,6 +19,7 @@ import com.alphawallet.app.entity.Transaction;
 import com.alphawallet.app.entity.TransactionMeta;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.interact.FetchTransactionsInteract;
+import com.alphawallet.app.repository.EthereumNetworkBase;
 import com.alphawallet.app.service.AssetDefinitionService;
 import com.alphawallet.app.service.TokensService;
 import com.alphawallet.app.ui.TokenActivity;
@@ -111,7 +112,11 @@ public class TransactionHolder extends BinderViewHolder<TransactionMeta> impleme
 
         //set address or contract name
         String destinationOrContract = token.getTransactionDestination(transaction);
-        address.setText(destinationOrContract);
+        if (token.tokenInfo != null && EthereumNetworkBase.isVelasNetwork(token.tokenInfo.chainId)) {
+            address.setText(VelasUtils.ethToVlx(destinationOrContract));
+        } else {
+            address.setText(destinationOrContract);
+        }
 
         //set colours and up/down arrow
         tokenIcon.bindData(token, assetService);
