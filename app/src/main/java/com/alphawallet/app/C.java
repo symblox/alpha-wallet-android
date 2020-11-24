@@ -13,7 +13,7 @@ public abstract class C {
     public static final int REQUEST_UNIVERSAL_SCAN = 1015;
 
     public static final String VELAS_MAINNET_NETWORK_NAME = "Velas";
-    public static final String VELAS_MAINNET_CHINA_NETWORK_NAME = "Velas China";
+    public static final String VELAS_MAINNET_CHINA_NETWORK_NAME = "Velas Aux";
     public static final String VELAS_TESTNET_NETWORK_NAME = "Velas Testnet";
     public static final String ETHEREUM_NETWORK_NAME = "Ethereum";
     public static final String CLASSIC_NETWORK_NAME = "Ethereum Classic";
