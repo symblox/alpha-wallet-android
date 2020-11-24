@@ -645,7 +645,7 @@ public class TokensService
             long lastUpdateDiff = currentTime - check.lastUpdateTime;
             float weighting = check.balanceUpdateWeight;
 
-            if (!token.isEthereum()) continue; //only check chains when wallet out of focus
+            //if (!token.isEthereum()) continue; //only check chains when wallet out of focus
 
             //simply multiply the weighting by the last diff.
             float updateFactor = weighting * (float) lastUpdateDiff;
