@@ -90,13 +90,6 @@ public class Wallet implements Parcelable {
 		parcel.writeString(balanceSymbol);
 	}
 
-	public String vlxAddress() {
-		if (!TextUtils.isEmpty(address) && Hex.containsHexPrefix(address)) {
-			return VelasUtils.ethToVlx(address);
-		}
-		return address;
-	}
-
 	public boolean setWalletBalance(Token token)
 	{
 		balanceSymbol = token.tokenInfo != null ? token.tokenInfo.symbol : "ETH";

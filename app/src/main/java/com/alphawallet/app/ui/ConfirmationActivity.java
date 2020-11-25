@@ -531,7 +531,11 @@ public class ConfirmationActivity extends BaseActivity implements SignAuthentica
     }
 
     private void onDefaultWallet(Wallet wallet) {
-        fromAddressText.setText(wallet.vlxAddress());
+        if (EthereumNetworkBase.isVelasNetwork(chainId)) {
+            fromAddressText.setText(VelasUtils.ethToVlx(wallet.address));
+        } else {
+            fromAddressText.setText(wallet.address);
+        }
         sendingWallet = wallet;
 
         progressGasEstimate.setVisibility(View.VISIBLE);

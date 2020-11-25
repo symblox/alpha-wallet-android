@@ -24,6 +24,7 @@ import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.entity.WalletType;
 import com.alphawallet.app.util.Blockies;
 import com.alphawallet.app.util.Utils;
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.app.viewmodel.TransferTicketDetailViewModel;
 import com.alphawallet.app.viewmodel.WalletActionsViewModel;
 import com.alphawallet.app.viewmodel.WalletActionsViewModelFactory;
@@ -182,7 +183,7 @@ public class WalletActionsActivity extends BaseActivity implements Runnable, Vie
         }
 
         //walletAddressText.setText(Utils.formatAddress(wallet.address));
-        walletAddressText.setText(wallet.vlxAddress());
+        walletAddressText.setText(VelasUtils.ethToVlx(wallet.address));
 
         deleteWalletSetting.setListener(this::onDeleteWalletSettingClicked);
 
@@ -344,7 +345,7 @@ public class WalletActionsActivity extends BaseActivity implements Runnable, Vie
 
     private void copyToClipboard() {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("walletAddress", wallet.vlxAddress());
+        ClipData clip = ClipData.newPlainText("walletAddress", VelasUtils.ethToVlx(wallet.address));
         clipboard.setPrimaryClip(clip);
 
         Toast.makeText(this, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show();

@@ -18,6 +18,7 @@ import com.alphawallet.app.ui.WalletActionsActivity;
 import com.alphawallet.app.ui.widget.entity.WalletClickCallback;
 import com.alphawallet.app.util.Blockies;
 import com.alphawallet.app.util.Utils;
+import com.alphawallet.app.util.VelasUtils;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -110,7 +111,7 @@ public class WalletHolder extends BinderViewHolder<Wallet> implements View.OnCli
 			walletBalanceCurrency.setText(wallet.balanceSymbol);
 
 			//walletAddressText.setText(Utils.formatAddress(wallet.address));
-			walletAddressText.setText(wallet.vlxAddress());
+			walletAddressText.setText(VelasUtils.ethToVlx(wallet.address));
 
 			walletSelectedIcon.setSelected(addition.getBoolean(IS_DEFAULT_ADDITION, false));
 

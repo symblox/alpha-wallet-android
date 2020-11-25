@@ -262,10 +262,12 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
     }
 
     private String vlxAddress(String address) {
-        //Symblox doesn't want to show velas address in this screen
-//        if (!TextUtils.isEmpty(address)) {
-//            return VelasUtils.ethToVlx(Keys.toChecksumAddress(address));
-//        }
+        if (!TextUtils.isEmpty(address)) {
+            if ((networkInfo != null && EthereumNetworkBase.isVelasNetwork(networkInfo.chainId)) ||
+                    (token != null && token.tokenInfo != null && EthereumNetworkBase.isVelasNetwork(token.tokenInfo.chainId))) {
+                return VelasUtils.ethToVlx(Keys.toChecksumAddress(address));
+            }
+        }
         return Keys.toChecksumAddress(address);
     }
 
