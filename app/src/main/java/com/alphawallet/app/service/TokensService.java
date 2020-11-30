@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.alphawallet.app.BuildConfig;
 import com.alphawallet.app.C;
+import com.alphawallet.app.entity.AnalyticsProperties;
 import com.alphawallet.app.entity.ContractLocator;
 import com.alphawallet.app.entity.ContractType;
 import com.alphawallet.app.entity.NetworkInfo;
@@ -57,8 +58,8 @@ public class TokensService
     public static final long PENDING_TIME_LIMIT = 3*DateUtils.MINUTE_IN_MILLIS; //cut off pending chain after 3 minutes
 
     private static final Map<String, Float> tokenValueMap = new ConcurrentHashMap<>(); //this is used to compute the USD value of the tokens on an address
-    private static final Map<Integer, Long> pendingChainMap = new ConcurrentHashMap<>();
-    private static final Map<String, SparseArray<ContractType>> interfaceSpecMap = new ConcurrentHashMap<>();
+    private static final Map<Integer, Long> pendingChainMap = new ConcurrentHashMap<>(); //list of chains that have pending transactions on them, for expediting checks
+    private static final Map<String, SparseArray<ContractType>> interfaceSpecMap = new ConcurrentHashMap<>(); //TODO: now redundant, can directly change interface
     private final ConcurrentLinkedQueue<Token> tokenStoreList = new ConcurrentLinkedQueue<>();
     private String currentAddress = null;
     private final EthereumNetworkRepositoryType ethereumNetworkRepository;
@@ -66,6 +67,7 @@ public class TokensService
     private final Context context;
     private final TickerService tickerService;
     private final OpenseaService openseaService;
+    private final AnalyticsServiceType analyticsService;
     private final List<Integer> networkFilter;
     private ContractLocator focusToken;
     private final ConcurrentLinkedDeque<ContractAddress> unknownTokens;
@@ -93,12 +95,14 @@ public class TokensService
                          PreferenceRepositoryType preferenceRepository,
                          Context context,
                          TickerService tickerService,
-                         OpenseaService openseaService) {
+                         OpenseaService openseaService,
+                         AnalyticsServiceType analyticsService) {
         this.ethereumNetworkRepository = ethereumNetworkRepository;
         this.tokenRepository = tokenRepository;
         this.context = context;
         this.tickerService = tickerService;
         this.openseaService = openseaService;
+        this.analyticsService = analyticsService;
         networkFilter = new ArrayList<>();
         setupFilter();
         focusToken = null;
@@ -698,5 +702,13 @@ public class TokensService
     public void appOutOfFocus()
     {
         appHasFocus = false;
+    }
+
+    public void track(String eventType, String gasSpeed)
+    {
+        AnalyticsProperties analyticsProperties = new AnalyticsProperties();
+        analyticsProperties.setData(gasSpeed);
+
+        analyticsService.track(eventType, analyticsProperties);
     }
 }
