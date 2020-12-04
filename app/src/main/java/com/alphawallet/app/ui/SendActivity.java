@@ -161,7 +161,9 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
             ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
             try {
                 CharSequence textToPaste = clipboard.getPrimaryClip().getItemAt(0).getText();
-                toAddressEditText.setText(textToPaste);
+                if (textToPaste != null) {
+                    toAddressEditText.setText(correctAddress(textToPaste.toString()));
+                }
             } catch (Exception e) {
                 Log.e(SendActivity.class.getSimpleName(), e.getMessage(), e);
             }
