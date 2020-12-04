@@ -271,7 +271,7 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
                             switch (result.getProtocol())
                             {
                                 case "address":
-                                    toAddressEditText.setText(vlxAddress(extracted_address));
+                                    toAddressEditText.setText(correctAddress(extracted_address));
                                     break;
                                 case "ethereum":
                                     //EIP681 protocol
@@ -376,7 +376,7 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
         switch (result.type)
         {
             case ADDRESS:
-                toAddressEditText.setText(vlxAddress(result.getAddress()));
+                toAddressEditText.setText(correctAddress(result.getAddress()));
                 break;
 
             case PAYMENT:
@@ -385,7 +385,7 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
                 sendText.setVisibility(View.VISIBLE);
                 sendText.setText(R.string.transfer_request);
                 token = viewModel.getToken(result.chainId, wallet.address);
-                toAddressEditText.setText(vlxAddress(result.getAddress()));
+                toAddressEditText.setText(correctAddress(result.getAddress()));
                 amountInput = new AmountEntryItem(this, tokenRepository, token);
                 amountInput.setAmountText(ethAmount);
                 amountInput.setAmount(ethAmount);
@@ -409,7 +409,7 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
                     String convertedAmount = Convert.getConvertedValue(result.tokenAmount, token.tokenInfo.decimals);
                     amountInput = new AmountEntryItem(this, tokenRepository, resultToken);
                     amountInput.setAmountText(convertedAmount);
-                    toAddressEditText.setText(vlxAddress(result.functionToAddress));
+                    toAddressEditText.setText(correctAddress(result.functionToAddress));
                     sendText.setVisibility(View.VISIBLE);
                     sendText.setText(getString(R.string.token_transfer_request, resultToken.getFullName()));
                 }
@@ -420,7 +420,7 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
                 displayScanError(R.string.toast_qr_code_no_address, getString(R.string.no_tokens));
                 //amountInput = new AmountEntryItem(this, tokenRepository, null);
                 //amountInput.setAmountText(result.functionDetail);
-                if (result.functionToAddress != null) toAddressEditText.setText(vlxAddress(result.functionToAddress));
+                if (result.functionToAddress != null) toAddressEditText.setText(correctAddress(result.functionToAddress));
                 break;
 
             default:
@@ -565,13 +565,12 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
         viewModel.setChainId(chainId);
     }
 
-    private String vlxAddress(String address) {
-        if (VelasUtils.isValidVlxAddress(address)) {
-            return address;
-        } else if (Hex.containsHexPrefix(address)) {
-            try {
-                return VelasUtils.ethToVlx(address);
-            } catch (Error error) {}
+    private String correctAddress(String address) {
+        if (EthereumNetworkBase.isVelasNetwork(currentChain)) {
+            //show vlx address
+            return VelasUtils.ethToVlx(address);
+        } else if (VelasUtils.isValidVlxAddress(address)) {
+            return VelasUtils.vlxToEth(address);
         }
         return address;
     }
