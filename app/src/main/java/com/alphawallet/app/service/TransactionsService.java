@@ -190,14 +190,15 @@ public class TransactionsService
     {
         //got a new transaction
         fetchTransactionDisposable = null;
-        if (transactions.length == 0) return;
 
-        Log.d("TRANSACTION", "Queried for " + token.tokenInfo.getName() + " : " + transactions.length + " Network transactions");
-
+        //always check pending transaction cached in disk
         checkPendingTransactions(token.tokenInfo.chainId);
 
-        //now check for unknown tokens
-        checkTokens(transactions);
+        if (transactions.length > 0) {
+            Log.d("TRANSACTION", "Queried for " + token.tokenInfo.getName() + " : " + transactions.length + " Network transactions");
+            //now check for unknown tokens
+            checkTokens(transactions);
+        }
     }
 
     /**
