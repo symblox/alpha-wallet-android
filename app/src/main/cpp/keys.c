@@ -59,7 +59,7 @@ Java_com_alphawallet_app_service_AnalyticsService_getAnalyticsKey( JNIEnv* env, 
 #if (HAS_KEYS == 1)
     return getDecryptedKey(env, mixpanelKey);
 #else
-    const jstring key = "3d1724375414474d7aa4cc3d8be074af";
+    const jstring key = "33bac4cd612b74e0eaff9b8db8228e2d";
     return (*env)->NewStringUTF(env, key);
 #endif
 }
