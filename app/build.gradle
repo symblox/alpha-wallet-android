@@ -35,10 +35,10 @@ android {
         }
     }
     defaultConfig {
-        versionCode 135
-        versionName "3.21.1"
+        versionCode 4
+        versionName "1.0.0"
 
-        applicationId "com.velas.defiwallet"
+        applicationId "io.symblox.defiwallet"
         minSdkVersion 23
         targetSdkVersion 29
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
