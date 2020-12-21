@@ -80,7 +80,7 @@ public class EthereumNetworkRepository extends EthereumNetworkBase
 
         if (networkFilters == null || networkFilters.contains(EthereumNetworkRepository.VELAS_MAINNET_ID))
         {
-            for (UnknownToken unknownToken: knownContract.getMainNet())
+            for (UnknownToken unknownToken: knownContract.getVelas())
             {
                 popularTokens.put(unknownToken.address.toLowerCase(), new ContractLocator(unknownToken.address, EthereumNetworkRepository.VELAS_MAINNET_ID));
             }

@@ -58,8 +58,8 @@ public class TokensService
     public static final long PENDING_TIME_LIMIT = 3*DateUtils.MINUTE_IN_MILLIS; //cut off pending chain after 3 minutes
 
     private static final Map<String, Float> tokenValueMap = new ConcurrentHashMap<>(); //this is used to compute the USD value of the tokens on an address
-    private static final Map<Integer, Long> pendingChainMap = new ConcurrentHashMap<>(); //list of chains that have pending transactions on them, for expediting checks
-    private static final Map<String, SparseArray<ContractType>> interfaceSpecMap = new ConcurrentHashMap<>(); //TODO: now redundant, can directly change interface
+    private static final Map<Integer, Long> pendingChainMap = new ConcurrentHashMap<>();
+    private static final Map<String, SparseArray<ContractType>> interfaceSpecMap = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<Token> tokenStoreList = new ConcurrentLinkedQueue<>();
     private String currentAddress = null;
     private final EthereumNetworkRepositoryType ethereumNetworkRepository;
@@ -563,7 +563,7 @@ public class TokensService
             long lastUpdateDiff = currentTime - check.lastUpdate;
             float weighting = check.calculateBalanceUpdateWeight();
 
-            // if (!appHasFocus && !token.isEthereum()) continue; //only check chains when wallet out of focus
+            if (!appHasFocus && !token.isEthereum()) continue; //only check chains when wallet out of focus
 
             //simply multiply the weighting by the last diff.
             float updateFactor = weighting * (float) lastUpdateDiff;
