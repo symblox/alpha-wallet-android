@@ -58,6 +58,15 @@ public class TokenManagementViewModel extends BaseViewModel {
         fetchTokensDisposable.dispose();
     }
 
+    public void filter(String searchString)
+    {
+        tokensService.getAllTokenMetas(searchString)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(metas -> tokens.postValue(metas), error -> { })
+                .isDisposed();
+    }
+
     public void setTokenEnabled(Wallet wallet, Token token, boolean enabled) {
         changeTokenEnableInteract.setEnable(wallet, token, enabled);
     }

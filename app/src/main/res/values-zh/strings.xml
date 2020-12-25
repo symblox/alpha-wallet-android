@@ -673,4 +673,6 @@
     <string name="message_transaction_not_sent">Transaction not sent</string>
     <string name="popular_tokens">热门通证</string>
     <string name="unable_to_get_biometrics">无法获得生物识别解锁</string>
+
+    <string name="text_assets">Assets</string>
 </resources>

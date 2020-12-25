@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.alphawallet.app.ui.widget.adapter.GroupTokensAdapter;
 import com.alphawallet.app.viewmodel.ActivityViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -94,7 +95,7 @@ public class WalletFragment extends BaseFragment implements
 
     private SystemView systemView;
     private ProgressView progressView;
-    private TokensAdapter adapter;
+    private GroupTokensAdapter adapter;
     private View selectedToken;
     private final Handler handler = new Handler();
     private String importFileName;
@@ -138,7 +139,7 @@ public class WalletFragment extends BaseFragment implements
     }
 
     private void initList() {
-        adapter = new TokensAdapter(this, viewModel.getAssetDefinitionService(), viewModel.getTokensService(), getContext());
+        adapter = new GroupTokensAdapter(this, viewModel.getAssetDefinitionService(), viewModel.getTokensService(), getContext());
         adapter.setHasStableIds(true);
         setLinearLayoutManager(TAB_ALL);
         recyclerView.setAdapter(adapter);
@@ -562,11 +563,11 @@ public class WalletFragment extends BaseFragment implements
     }
 
     public class SwipeCallback extends ItemTouchHelper.SimpleCallback {
-        private TokensAdapter mAdapter;
+        private GroupTokensAdapter mAdapter;
         private Drawable icon;
         private ColorDrawable background;
 
-        SwipeCallback(TokensAdapter adapter) {
+        SwipeCallback(GroupTokensAdapter adapter) {
             super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
             mAdapter = adapter;
             if (getActivity() != null) {

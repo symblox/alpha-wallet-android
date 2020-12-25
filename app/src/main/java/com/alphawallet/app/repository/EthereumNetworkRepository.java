@@ -41,7 +41,11 @@ public class EthereumNetworkRepository extends EthereumNetworkBase
 
     public static List<Integer> addDefaultNetworks()
     {
-        return new ArrayList<>(Collections.singletonList(EthereumNetworkRepository.VELAS_MAINNET_ID));
+        ArrayList result = new ArrayList();
+        result.add(EthereumNetworkRepository.VELAS_MAINNET_ID);
+        result.add(EthereumNetworkRepository.MAINNET_ID);
+        return result;
+        //return new ArrayList<>(Collections.singletonList(EthereumNetworkRepository.VELAS_MAINNET_ID));
     }
 
     public static String getNodeURLByNetworkId(int networkId) {

@@ -122,7 +122,7 @@ public class TokenListAdapter extends RecyclerView.Adapter<BinderViewHolder> imp
          */
         unknownTokenList = Objects.requireNonNull(readContracts()).getMainNet();
 
-        setupList(tokenList, false);
+        setupList(tokenList);
     }
 
     private List<TokenCardMeta> filterTokens(List<TokenCardMeta> tokens) {
@@ -138,7 +138,7 @@ public class TokenListAdapter extends RecyclerView.Adapter<BinderViewHolder> imp
         return filteredList;
     }
 
-    private void setupList(List<TokenCardMeta> tokens, boolean forFilter)
+    private void setupList(List<TokenCardMeta> tokens)
     {
         hiddenTokensCount = 0;
         popularTokensCount = 0;
@@ -371,22 +371,22 @@ public class TokenListAdapter extends RecyclerView.Adapter<BinderViewHolder> imp
         pref.edit().putBoolean(HIDE_ZERO_BALANCE_TOKENS, isChecked).apply();
     }
 
-    public void filter(String searchString)
-    {
-        tokensService.getAllTokenMetas(searchString)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(metas -> updateList(metas, searchString), error -> { })
-                .isDisposed();
-    }
+//    public void filter(String searchString)
+//    {
+//        tokensService.getAllTokenMetas(searchString)
+//                .subscribeOn(Schedulers.computation())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(metas -> updateList(metas, searchString), error -> { })
+//                .isDisposed();
+//    }
 
-    private void updateList(TokenCardMeta[] metas, String searchString)
+    public void updateList(TokenCardMeta[] metas)
     {
         /*
         While setting up, when searchString is Empty, it is hard to identify whether it is from filter call or not.
         So when searchString is empty, consider it as a regular update.
          */
-        setupList(Arrays.asList(metas), !searchString.isEmpty());
+        setupList(Arrays.asList(metas));
         notifyDataSetChanged();
     }
 
