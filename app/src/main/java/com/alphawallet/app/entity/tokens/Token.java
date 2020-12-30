@@ -7,6 +7,7 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 
+import com.alphawallet.app.C;
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.ContractType;
 import com.alphawallet.app.entity.TicketRangeElement;
@@ -66,7 +67,12 @@ public class Token implements Parcelable, Comparable<Token>
     private final Map<BigInteger, Map<String, TokenScriptResult.Attribute>> resultMap = new ConcurrentHashMap<>(); //Build result map for function parse, per tokenId
     private Map<BigInteger, List<String>> functionAvailabilityMap = null;
 
-    public String getNetworkName() { return shortNetworkName; }
+    public String getNetworkName() {
+        if (EthereumNetworkRepository.isVelasNetwork(tokenInfo.chainId)) {
+            return C.VELAS_MAINNET_NETWORK_NAME;
+        }
+        return shortNetworkName;
+    }
 
     public Token(TokenInfo tokenInfo, BigDecimal balance, long updateBlancaTime, String networkName, ContractType type) {
         this.tokenInfo = tokenInfo;

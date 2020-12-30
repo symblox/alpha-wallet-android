@@ -36,8 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Single;
 
-public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryType
-{
+public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryType {
     private static final String DEFAULT_HOMEPAGE = "https://app.symblox.io";
     /* constructing URLs from BuildConfig. In the below area you will see hardcoded key like da3717...
        These hardcoded keys are fallbacks used by AlphaWallet forks.
@@ -52,6 +51,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     }
 
     public static native String getAmberDataKey();
+
     public static native String getInfuraKey();
 
     //Fallback nodes: these nodes are used if there's no Amberdata key, and also as a fallback in case the primary node times out while attempting a call
@@ -113,7 +113,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     final Map<Integer, NetworkInfo> networkMap;
 
     final NetworkInfo[] NETWORKS;
-    static final NetworkInfo[] DEFAULT_NETWORKS = new NetworkInfo[] {
+    static final NetworkInfo[] DEFAULT_NETWORKS = new NetworkInfo[]{
             new NetworkInfo(C.VELAS_MAINNET_NETWORK_NAME, C.VELAS_SYMBOL,
                     VELAS_RPC_URL,
                     "https://explorer.velas.com/tx/", VELAS_MAINNET_ID, true,
@@ -126,12 +126,12 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
                     "https://explorer.testnet.veladev.net/"),
             new NetworkInfo(C.ETHEREUM_NETWORK_NAME, C.ETH_SYMBOL,
                     MAINNET_RPC_URL,
-                    "https://cn.etherscan.com/tx/",MAINNET_ID, false,
+                    "https://cn.etherscan.com/tx/", MAINNET_ID, false,
                     MAINNET_FALLBACK_RPC_URL,
                     "https://api-cn.etherscan.com/"),
             new NetworkInfo(C.CLASSIC_NETWORK_NAME, C.ETC_SYMBOL,
                     CLASSIC_RPC_URL,
-                    "https://blockscout.com/etc/mainnet/tx/",CLASSIC_ID, true, CLASSIC_RPC_URL, "https://blockscout.com/etc/mainnet/"),
+                    "https://blockscout.com/etc/mainnet/tx/", CLASSIC_ID, true, CLASSIC_RPC_URL, "https://blockscout.com/etc/mainnet/"),
             new NetworkInfo(C.XDAI_NETWORK_NAME,
                     C.xDAI_SYMBOL,
                     XDAI_RPC_URL,
@@ -153,18 +153,18 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
                     "https://api-kovan.etherscan.io/"),
             new NetworkInfo(C.ROPSTEN_NETWORK_NAME, C.ETH_SYMBOL,
                     ROPSTEN_RPC_URL,
-                    "https://ropsten.etherscan.io/tx/",ROPSTEN_ID, false,
+                    "https://ropsten.etherscan.io/tx/", ROPSTEN_ID, false,
                     "https://ropsten.infura.io/v3/" + BACKUP_INFURA_KEY,
                     "https://api-ropsten.etherscan.io/"),
             new NetworkInfo(C.SOKOL_NETWORK_NAME, C.POA_SYMBOL,
                     SOKOL_RPC_URL,
-                    "https://blockscout.com/poa/sokol/tx/",SOKOL_ID, false, SOKOL_RPC_URL, "https://blockscout.com/poa/sokol/"),
+                    "https://blockscout.com/poa/sokol/tx/", SOKOL_ID, false, SOKOL_RPC_URL, "https://blockscout.com/poa/sokol/"),
             new NetworkInfo(C.RINKEBY_NETWORK_NAME, C.ETH_SYMBOL, RINKEBY_RPC_URL,
-                    "https://rinkeby.etherscan.io/tx/",RINKEBY_ID, false,
+                    "https://rinkeby.etherscan.io/tx/", RINKEBY_ID, false,
                     RINKEBY_FALLBACK_RPC_URL,
                     "https://api-rinkeby.etherscan.io/"),
             new NetworkInfo(C.GOERLI_NETWORK_NAME, C.GOERLI_SYMBOL, GOERLI_RPC_URL,
-                    "https://goerli.etherscan.io/tx/",GOERLI_ID, false,
+                    "https://goerli.etherscan.io/tx/", GOERLI_ID, false,
                     GOERLI_RPC_URL,
                     "https://api-goerli.etherscan.io/"),
             new NetworkInfo(C.ARTIS_TAU1_NETWORK, C.ARTIS_TAU1_SYMBOL, ARTIS_TAU1_RPC_URL,
@@ -186,8 +186,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     private final Set<OnNetworkChangeListener> onNetworkChangedListeners = new HashSet<>();
     private boolean updatedTickers;
 
-    EthereumNetworkBase(PreferenceRepositoryType preferenceRepository, NetworkInfo[] additionalNetworks, boolean useTestNets)
-    {
+    EthereumNetworkBase(PreferenceRepositoryType preferenceRepository, NetworkInfo[] additionalNetworks, boolean useTestNets) {
         this.preferences = preferenceRepository;
 
         /* merging static compile time network list with runtime network list */
@@ -211,19 +210,17 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         }
 
         networkMap = new ConcurrentHashMap<>();
-        for (NetworkInfo network : NETWORKS)
-        {
+        for (NetworkInfo network : NETWORKS) {
             networkMap.put(network.chainId, network);
         }
         updatedTickers = false;
         updateVelasNetwork();
     }
 
-    private void addNetworks(NetworkInfo[] networks, List<NetworkInfo> result, boolean withValue)
-    {
-        for (NetworkInfo network : networks)
-        {
-            if (EthereumNetworkRepository.hasRealValue(network.chainId) == withValue) result.add(network);
+    private void addNetworks(NetworkInfo[] networks, List<NetworkInfo> result, boolean withValue) {
+        for (NetworkInfo network : networks) {
+            if (EthereumNetworkRepository.hasRealValue(network.chainId) == withValue)
+                result.add(network);
         }
     }
 
@@ -239,8 +236,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     }
 
     @Override
-    public String getNameById(int id)
-    {
+    public String getNameById(int id) {
         if (networkMap.containsKey(id)) return networkMap.get(id).name;
         else return "Unknown: " + id;
     }
@@ -251,38 +247,31 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     }
 
     @Override
-    public NetworkInfo getNetworkByChain(int chainId)
-    {
+    public NetworkInfo getNetworkByChain(int chainId) {
         return networkMap.get(chainId);
     }
 
     // fetches the last transaction nonce; if it's identical to the last used one then increment by one
     // to ensure we don't get transaction replacement
     @Override
-    public Single<BigInteger> getLastTransactionNonce(Web3j web3j, String walletAddress)
-    {
+    public Single<BigInteger> getLastTransactionNonce(Web3j web3j, String walletAddress) {
         return Single.fromCallable(() -> {
-            try
-            {
+            try {
                 EthGetTransactionCount ethGetTransactionCount = web3j
                         .ethGetTransactionCount(walletAddress, DefaultBlockParameterName.PENDING)
                         .send();
                 return ethGetTransactionCount.getTransactionCount();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 return BigInteger.ZERO;
             }
         });
     }
 
     @Override
-    public List<Integer> getFilterNetworkList()
-    {
+    public List<Integer> getFilterNetworkList() {
         List<Integer> networkIds = EthereumNetworkRepository.addDefaultNetworks();
         String filterList = preferences.getNetworkFilterList();
-        if (filterList.length() > 0)
-        {
+        if (filterList.length() > 0) {
             networkIds = Utils.intListToArray(filterList);
         }
 
@@ -290,8 +279,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     }
 
     @Override
-    public void setFilterNetworkList(int[] networkList)
-    {
+    public void setFilterNetworkList(int[] networkList) {
         for (int i = 0; i < networkList.length; i++) {
             if (networkList[i] == VELAS_MAINNET_ID) {
                 preferences.setVelasNodeSelected(VELAS_NODE);
@@ -312,7 +300,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         velas.name = (preferences.getVelasNodeSelected().equals(VELAS_CHINA_NODE)) ? C.VELAS_MAINNET_CHINA_NETWORK_NAME : C.VELAS_MAINNET_NETWORK_NAME;
         velas.rpcServerUrl = (preferences.getVelasNodeSelected().equals(VELAS_CHINA_NODE)) ? VELAS_CHINA_NODE_RPC_URL : VELAS_RPC_URL;
 
-        EthereumNetworkBase.velasNetworkInfo.name = velas.name;
+        EthereumNetworkBase.velasNetworkInfo.name = C.VELAS_MAINNET_NETWORK_NAME;//velas.name;
         EthereumNetworkBase.velasNetworkInfo.rpcServerUrl = velas.rpcServerUrl;
     }
 
@@ -369,10 +357,8 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         return (chainId == VELAS_MAINNET_ID || chainId == VELAS_CHINA_MAINNET_ID || chainId == VELAS_TESTNET_ID);
     }
 
-    public static boolean hasRealValue(int chainId)
-    {
-        switch (chainId)
-        {
+    public static boolean hasRealValue(int chainId) {
+        switch (chainId) {
             case EthereumNetworkRepository.MAINNET_ID:
             case EthereumNetworkRepository.POA_ID:
             case EthereumNetworkRepository.CLASSIC_ID:
@@ -389,8 +375,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
 
     public static String getSecondaryNodeURL(int networkId) {
 
-        switch (networkId)
-        {
+        switch (networkId) {
             case MAINNET_ID:
                 return MAINNET_FALLBACK_RPC_URL;
             case KOVAN_ID:
@@ -427,8 +412,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     }
 
     public static int getChainLogo(int networkId) {
-        switch (networkId)
-        {
+        switch (networkId) {
             case MAINNET_ID:
                 return R.drawable.ic_ethereum_logo;
             case KOVAN_ID:
@@ -464,8 +448,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     }
 
     public static String getNodeURLByNetworkId(int networkId) {
-        switch (networkId)
-        {
+        switch (networkId) {
             case MAINNET_ID:
                 return MAINNET_RPC_URL;
             case KOVAN_ID:
@@ -503,12 +486,12 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
 
     /**
      * This is used so as not to leak API credentials to web3; XInfuraAPI is the backup API key checked into github
+     *
      * @param networkId
      * @return
      */
     public static String getDefaultNodeURL(int networkId) {
-        switch (networkId)
-        {
+        switch (networkId) {
             case MAINNET_ID:
                 return "https://mainnet.infura.io/v3/" + BuildConfig.XInfuraAPI;
             case KOVAN_ID:
@@ -526,83 +509,68 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         }
     }
 
-    public static String getMagicLinkDomainFromNetworkId(int networkId)
-    {
+    public static String getMagicLinkDomainFromNetworkId(int networkId) {
         return MagicLinkInfo.getMagicLinkDomainFromNetworkId(networkId);
     }
 
-    public static String getEtherscanURLbyNetwork(int networkId)
-    {
+    public static String getEtherscanURLbyNetwork(int networkId) {
         return MagicLinkInfo.getEtherscanURLbyNetwork(networkId);
     }
 
-    public static boolean hasGasOverride(int chainId)
-    {
+    public static boolean hasGasOverride(int chainId) {
         return false;
     }
 
-    public static BigInteger gasOverrideValue(int chainId)
-    {
+    public static BigInteger gasOverrideValue(int chainId) {
         return BigInteger.valueOf(1);
     }
 
-    public static List<ChainSpec> extraChains()
-    {
+    public static List<ChainSpec> extraChains() {
         return null;
     }
 
-    public static void addRequiredCredentials(int chainId, HttpService publicNodeService)
-    {
+    public static void addRequiredCredentials(int chainId, HttpService publicNodeService) {
 
     }
 
-    public static List<Integer> addDefaultNetworks()
-    {
+    public static List<Integer> addDefaultNetworks() {
         return new ArrayList<>(Collections.singletonList(EthereumNetworkRepository.VELAS_MAINNET_ID));
     }
 
-    public static ContractLocator getOverrideToken()
-    {
+    public static ContractLocator getOverrideToken() {
         return new ContractLocator("", EthereumNetworkRepository.VELAS_MAINNET_ID, ContractType.ETHEREUM);
     }
 
-    public static boolean isPriorityToken(Token token)
-    {
+    public static boolean isPriorityToken(Token token) {
         return false;
     }
 
-    public static int getPriorityOverride(Token token)
-    {
+    public static int getPriorityOverride(Token token) {
         if (token.isEthereum()) return token.tokenInfo.chainId + 1;
         else return 0;
     }
 
-    public static boolean showNetworkFilters() { return true; }
+    public static boolean showNetworkFilters() {
+        return true;
+    }
 
-    public static int decimalOverride(String address, int chainId)
-    {
+    public static int decimalOverride(String address, int chainId) {
         return 0;
     }
 
-    public static String defaultDapp()
-    {
+    public static String defaultDapp() {
         return DEFAULT_HOMEPAGE;
     }
 
-    public Token getBlankOverrideToken(NetworkInfo networkInfo)
-    {
+    public Token getBlankOverrideToken(NetworkInfo networkInfo) {
         return createCurrencyToken(networkInfo);
     }
 
-    public Single<Token[]> getBlankOverrideTokens(Wallet wallet)
-    {
+    public Single<Token[]> getBlankOverrideTokens(Wallet wallet) {
         return Single.fromCallable(() -> {
-            if (getBlankOverrideToken() == null)
-            {
+            if (getBlankOverrideToken() == null) {
                 return new Token[0];
-            }
-            else
-            {
+            } else {
                 Token[] tokens = new Token[1];
                 tokens[0] = getBlankOverrideToken();
                 tokens[0].setTokenWallet(wallet.address);
@@ -611,8 +579,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         });
     }
 
-    private static Token createCurrencyToken(NetworkInfo network)
-    {
+    private static Token createCurrencyToken(NetworkInfo network) {
         TokenInfo tokenInfo = new TokenInfo(Address.DEFAULT.toString(), network.name, network.symbol, 18, true, network.chainId);
         BigDecimal balance = BigDecimal.ZERO;
         Token eth = new Token(tokenInfo, balance, 0, network.getShortName(), ContractType.ETHEREUM); //create with zero time index to ensure it's updated immediately
@@ -622,8 +589,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         return eth;
     }
 
-    public Token getBlankOverrideToken()
-    {
+    public Token getBlankOverrideToken() {
         return null;
     }
 }

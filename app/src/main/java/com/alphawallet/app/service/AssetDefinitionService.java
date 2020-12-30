@@ -833,9 +833,6 @@ public class AssetDefinitionService implements ParseResult, AttributeInterface
 
     public String getTokenName(int chainId, String address, int count)
     {
-        if (chainId == EthereumNetworkBase.VELAS_MAINNET_ID) {
-            return EthereumNetworkBase.velasNetworkInfo.name;
-        }
         String tokenName = null;
         if (address.equalsIgnoreCase(tokensService.getCurrentAddress())) address = "ethereum";
         try (Realm realm = realmManager.getRealmInstance(ASSET_DEFINITION_DB))
@@ -849,7 +846,9 @@ public class AssetDefinitionService implements ParseResult, AttributeInterface
                 tokenName = tsData.getName(count);
             }
         }
-
+        if (TextUtils.isEmpty(tokenName) && (chainId == EthereumNetworkBase.VELAS_MAINNET_ID)) {
+            return EthereumNetworkBase.velasNetworkInfo.name;
+        }
         return tokenName;
     }
 

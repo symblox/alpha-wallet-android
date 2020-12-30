@@ -151,7 +151,6 @@ public class TokenIcon extends ConstraintLayout
         {
             setupTextIcon(token);
             IconItem iconItem = assetDefinition.fetchIconForToken(token);
-
             Glide.with(getContext().getApplicationContext())
                     .load(iconItem.getUrl())
                     .signature(iconItem.getSignature())
