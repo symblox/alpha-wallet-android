@@ -45,6 +45,7 @@ import com.alphawallet.app.repository.entity.RealmTokenScriptData;
 import com.alphawallet.app.ui.HomeActivity;
 import com.alphawallet.app.ui.widget.entity.IconItem;
 import com.alphawallet.app.util.Utils;
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.app.viewmodel.HomeViewModel;
 import com.alphawallet.token.entity.Attribute;
 import com.alphawallet.token.entity.AttributeInterface;
@@ -2582,7 +2583,9 @@ public class AssetDefinitionService implements ParseResult, AttributeInterface
     public IconItem fetchIconForToken(Token token)
     {
         String correctedAddr = Keys.toChecksumAddress(token.getAddress());
-
+        if (EthereumNetworkRepository.isVelasNetwork(token.tokenInfo.chainId) && !token.getAddress().startsWith("0x")) {
+            correctedAddr = correctVlxToEthAddress(token.getAddress(), token.tokenInfo.chainId);
+        }
         String tURL = getTokenImageUrl(token.tokenInfo.chainId, token.getAddress());
         if (TextUtils.isEmpty(tURL))
         {
@@ -2671,5 +2674,16 @@ public class AssetDefinitionService implements ParseResult, AttributeInterface
     public Realm getEventRealm()
     {
         return realmManager.getRealmInstance(tokensService.getCurrentAddress());
+    }
+
+    private String correctVlxToEthAddress(String vlxAddress, int chainId) {
+        List<ContractLocator> knownContracts = ethereumNetworkRepository.getAllKnownContracts(Arrays.asList(chainId));
+        for (ContractLocator locator : knownContracts) {
+            String vlxContractAddress = VelasUtils.ethToVlx(locator.address);
+            if (vlxContractAddress.equalsIgnoreCase(vlxAddress)) {
+                return locator.address;
+            }
+        }
+        return vlxAddress;
     }
 }

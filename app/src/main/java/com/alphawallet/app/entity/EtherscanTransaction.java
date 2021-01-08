@@ -3,6 +3,7 @@ package com.alphawallet.app.entity;
 
 import android.content.Context;
 
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.token.tools.Numeric;
 
 /**
@@ -54,9 +55,11 @@ public class EtherscanTransaction
         if (decoder == null) decoder = new TransactionDecoder();
         TransactionInput data = decoder.decodeInput(input);
         boolean involved = false;
+        String fromAddress = VelasUtils.vlxToEth(trans.from);
+        String toAddress = VelasUtils.vlxToEth(trans.to);
         if ((data != null && data.functionData != null) && data.containsAddress(walletAddr)) return true;
-        if (trans.from.equalsIgnoreCase(walletAddr)) return true;
-        if (trans.to.equalsIgnoreCase(walletAddr)) return true;
+        if (fromAddress.equalsIgnoreCase(walletAddr)) return true;
+        if (toAddress.equalsIgnoreCase(walletAddr)) return true;
         if (input != null && input.length() > 40 && input.contains(Numeric.cleanHexPrefix(walletAddr.toLowerCase()))) return true;
         if (trans.operations != null && trans.operations.length > 0 && trans.operations[0].walletInvolvedWithTransaction(walletAddr))
             involved = true;
