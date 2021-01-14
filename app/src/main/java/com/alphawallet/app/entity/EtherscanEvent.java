@@ -2,6 +2,8 @@ package com.alphawallet.app.entity;
 
 import android.text.TextUtils;
 
+import com.alphawallet.app.util.VelasUtils;
+
 /**
  * Created by JB on 21/10/2020.
  */
@@ -51,7 +53,7 @@ public class EtherscanEvent
             }
         }
         op.contract.address = contractAddress;
-        if (from.equalsIgnoreCase(walletAddress))
+        if (VelasUtils.isSameAddress(from, walletAddress))
         {
             setName(o, TransactionType.TRANSFER_TO);
         }

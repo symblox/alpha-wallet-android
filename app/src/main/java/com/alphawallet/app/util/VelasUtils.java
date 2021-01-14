@@ -23,6 +23,13 @@ public class VelasUtils {
         return (int) Math.ceil(n / BITS_PER_DIGIT);
     }
 
+    public static boolean isSameAddress(String address1, String address2) {
+        if (TextUtils.isEmpty(address1) || TextUtils.isEmpty(address2)) {
+            return false;
+        }
+        return address1.equalsIgnoreCase(address2) || address1.equalsIgnoreCase(VelasUtils.ethToVlx(address2)) || address1.equalsIgnoreCase(VelasUtils.vlxToEth(address2));
+    }
+
     public static boolean isValidVlxAddress(String input) {
         if (TextUtils.isEmpty(input)) {
             return false;

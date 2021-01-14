@@ -357,11 +357,11 @@ public class Transaction implements Parcelable {
 
 		if (contractAddress.equals("eth"))
 		{
-			return (input.equals("0x") || from.equalsIgnoreCase(walletAddress));
+			return (input.equals("0x") || VelasUtils.isSameAddress(from, walletAddress));
 		}
 		else if (walletAddress.equalsIgnoreCase(contractAddress)) //transactions sent from or sent to the main currency account
 		{
-			return from.equalsIgnoreCase(walletAddress) || to.equalsIgnoreCase(walletAddress);
+			return VelasUtils.isSameAddress(from, walletAddress) || VelasUtils.isSameAddress(to, walletAddress);
 		}
 		else
 		{

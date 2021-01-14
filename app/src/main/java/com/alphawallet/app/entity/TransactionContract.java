@@ -218,7 +218,7 @@ public class TransactionContract implements Parcelable {
         else
         {
             //simple heuristic: if value is attached to a transaction from the user, then it's outgoing
-            if (tx.from.equalsIgnoreCase(walletAddress) || tx.from.equalsIgnoreCase(VelasUtils.ethToVlx(walletAddress)))
+            if (VelasUtils.isSameAddress(tx.from, walletAddress))
             {
                 supplimentalTxt = "-" + BalanceUtils.getScaledValue(tx.value, C.ETHER_DECIMALS) + " " + networkName;
             }
