@@ -52,6 +52,8 @@ import com.alphawallet.app.viewmodel.SendViewModel;
 import com.alphawallet.app.viewmodel.SendViewModelFactory;
 import com.alphawallet.app.widget.AWalletAlertDialog;
 
+import org.web3j.crypto.WalletUtils;
+
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -87,6 +89,7 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
     private TextView tokenBalanceText;
     private TextView tokenSymbolText;
     private AutoCompleteTextView toAddressEditText;
+    private TextView toAddressError;
     private TextView pasteText;
     private Button nextBtn;
     private String currentAmount;
@@ -155,6 +158,7 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
     private void initViews() {
 
         toAddressEditText = findViewById(R.id.edit_to_address);
+        toAddressError = findViewById(R.id.to_address_error);
 
         pasteText = findViewById(R.id.paste);
         pasteText.setOnClickListener(v -> {
@@ -200,6 +204,7 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
     private void onNext() {
         KeyboardUtils.hideKeyboard(getCurrentFocus());
         boolean isValid = amountInput.checkValidAmount();
+        toAddressError.setVisibility(View.GONE);
 
         if (isBalanceZero(currentAmount)) {
             amountInput.setError(R.string.error_zero_balance);
@@ -210,6 +215,12 @@ public class SendActivity extends BaseActivity implements ItemClickListener, Amo
             isValid = false;
         }
 
+        if ((EthereumNetworkRepository.isVelasNetwork(currentChain) && !VelasUtils.isValidVlxAddress(toAddressEditText.getText().toString())) ||
+                (!EthereumNetworkRepository.isVelasNetwork(currentChain) && !WalletUtils.isValidAddress(toAddressEditText.getText().toString()))) {
+            toAddressError.setVisibility(View.VISIBLE);
+            toAddressError.setText(getString(R.string.error_invalid_address));
+            return;
+        }
         String to = ensHandler.getAddressFromEditView();
         if (to == null) return;
 
