@@ -25,7 +25,6 @@ import com.alphawallet.app.util.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.alphawallet.app.repository.EthereumNetworkBase.VELAS_CHINA_MAINNET_ID;
 import static com.alphawallet.app.repository.EthereumNetworkBase.VELAS_MAINNET_ID;
 
 public class SelectActiveNetworkActivity extends SelectNetworkActivity {
@@ -218,8 +217,7 @@ public class SelectActiveNetworkActivity extends SelectNetworkActivity {
             if (networkType.getType() == NetworkType.Type.NetworkItem_Single) {
                 for (NetworkType network : dataSet) {
                     if ((network.getItem() instanceof NetworkItem) &&
-                            (((NetworkItem) network.getItem()).getChainId() == VELAS_MAINNET_ID ||
-                                    ((NetworkItem) network.getItem()).getChainId() == VELAS_CHINA_MAINNET_ID)) {
+                            EthereumNetworkRepository.isVelasNetwork(((NetworkItem) network.getItem()).getChainId())) {
                         ((NetworkItem) network.getItem()).setSelected(false);
                     }
                 }
