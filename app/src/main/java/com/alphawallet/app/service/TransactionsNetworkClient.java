@@ -52,6 +52,8 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
     private final Gson gson;
     private final RealmManager realmManager;
 
+    private final Map<Integer, Boolean> shouldGetFromFirstBlock = new HashMap<>();
+
     public TransactionsNetworkClient(
             OkHttpClient httpClient,
             Gson gson,
@@ -97,6 +99,10 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
     {
         return Single.fromCallable(() -> {
             long lastBlockNumber = lastBlock + 1;
+            if (!shouldGetFromFirstBlock.containsKey(networkInfo.chainId)) {
+                lastBlockNumber = 1;
+                shouldGetFromFirstBlock.put(networkInfo.chainId, true);
+            }
             Map<String, Transaction> updates = new HashMap<>();
             EtherscanTransaction lastTransaction = null;
             try (Realm instance = realmManager.getRealmInstance(walletAddress))
