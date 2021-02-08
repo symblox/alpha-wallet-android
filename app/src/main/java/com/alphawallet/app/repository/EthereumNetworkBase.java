@@ -353,10 +353,6 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
         onNetworkChangedListeners.add(onNetworkChanged);
     }
 
-    public static boolean isVelasNetwork(int chainId) {
-        return (chainId == VELAS_MAINNET_ID || chainId == VELAS_CHINA_MAINNET_ID || chainId == VELAS_TESTNET_ID);
-    }
-
     public static boolean hasRealValue(int chainId) {
         switch (chainId) {
             case EthereumNetworkRepository.MAINNET_ID:
@@ -414,7 +410,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
     public static int getChainLogo(int networkId) {
         switch (networkId) {
             case MAINNET_ID:
-                return R.drawable.ic_ethereum_logo;
+                return R.drawable.ic_token_eth;
             case KOVAN_ID:
                 return R.drawable.kovan_logo;
             case ROPSTEN_ID:

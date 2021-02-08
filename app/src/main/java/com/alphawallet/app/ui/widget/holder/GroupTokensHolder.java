@@ -34,7 +34,7 @@ public class GroupTokensHolder extends BinderViewHolder<GroupTokenData> {
     @Override
     public void bind(@Nullable GroupTokenData data, @NonNull Bundle addition) {
         sectionName.setText(data.groupName);
-        address.setText(EthereumNetworkRepository.isVelasNetwork(data.getChainId()) ? VelasUtils.ethToVlx(data.walletAddress) : data.walletAddress);
+        address.setText(VelasUtils.isVelasNetwork(data.getChainId()) ? VelasUtils.ethToVlx(data.walletAddress) : data.walletAddress);
         ivAdd.setOnClickListener(v -> {
             if (data.walletAddress != null) {
                 Intent intent = new Intent(getContext(), TokenManagementActivity.class);

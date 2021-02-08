@@ -26,7 +26,7 @@ Java_com_alphawallet_app_repository_EthereumNetworkBase_getInfuraKey( JNIEnv* en
 #if (HAS_KEYS == 1)
     return getDecryptedKey(env, infuraKey);
 #else
-    const jstring key = "da3717f25f824cc1baa32d812386d93f";
+    const jstring key = "eefd2c6d065b45299d0bb3e12e81d51e";
     return (*env)->NewStringUTF(env, key);
 #endif
 }
@@ -59,7 +59,7 @@ Java_com_alphawallet_app_service_AnalyticsService_getAnalyticsKey( JNIEnv* env, 
 #if (HAS_KEYS == 1)
     return getDecryptedKey(env, mixpanelKey);
 #else
-    const jstring key = "33bac4cd612b74e0eaff9b8db8228e2d";
+    const jstring key = "d4c1140e21f6204184bb1ea02eb84412";
     return (*env)->NewStringUTF(env, key);
 #endif
 }

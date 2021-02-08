@@ -11,6 +11,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.alphawallet.app.repository.EthereumNetworkBase.VELAS_CHINA_MAINNET_ID;
+import static com.alphawallet.app.repository.EthereumNetworkBase.VELAS_MAINNET_ID;
+import static com.alphawallet.app.repository.EthereumNetworkBase.VELAS_TESTNET_ID;
 import static org.web3j.crypto.Keys.ADDRESS_LENGTH_IN_HEX;
 
 public class VelasUtils {
@@ -21,6 +24,14 @@ public class VelasUtils {
 
     static int maxEncodedLen(int n) {
         return (int) Math.ceil(n / BITS_PER_DIGIT);
+    }
+
+    public static boolean isMyWallet(String address, String tokenWallet) {
+        return (address.equalsIgnoreCase(tokenWallet) || address.equalsIgnoreCase(VelasUtils.ethToVlx(tokenWallet)));
+    }
+
+    public static boolean isVelasNetwork(int chainId) {
+        return (chainId == VELAS_MAINNET_ID || chainId == VELAS_CHINA_MAINNET_ID || chainId == VELAS_TESTNET_ID);
     }
 
     public static boolean isSameAddress(String address1, String address2) {

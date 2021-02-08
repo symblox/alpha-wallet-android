@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.alphawallet.app.entity.ContractType;
 import com.alphawallet.app.entity.NetworkInfo;
@@ -436,7 +437,7 @@ public class TickerService
             {
                 JSONObject e = (JSONObject) data.get(i);
                 ticker = tickerFromAmber(e);
-                erc20Tickers.put(e.getString("address").toLowerCase(), ticker);
+                if (ticker != null) erc20Tickers.put(e.getString("address").toLowerCase(), ticker);
             }
         }
 
@@ -445,12 +446,21 @@ public class TickerService
 
     private TokenTicker tickerFromAmber(JSONObject e) throws JSONException
     {
-        BigDecimal change = new BigDecimal(e.getString("changeInPriceDaily"));
-        String percentChange = change.setScale(3, RoundingMode.DOWN).toString();
-        double usdPrice = e.getDouble("currentPrice");
-        double currentPrice = usdPrice * currentConversionRate;
-        String priceStr = String.valueOf(currentPrice);
-        TokenTicker ticker = new TokenTicker(priceStr, percentChange, currentCurrencySymbolTxt, "", System.currentTimeMillis());
+        TokenTicker ticker = null;
+        try
+        {
+            BigDecimal change = new BigDecimal(e.getString("changeInPriceDaily"));
+            String percentChange = change.setScale(3, RoundingMode.DOWN).toString();
+            double usdPrice = e.getDouble("currentPrice");
+            double currentPrice = usdPrice * currentConversionRate;
+            String priceStr = String.valueOf(currentPrice);
+            ticker = new TokenTicker(priceStr, percentChange, currentCurrencySymbolTxt, "", System.currentTimeMillis());
+        }
+        catch (NumberFormatException nf)
+        {
+            //
+        }
+
         return ticker;
     }
 
@@ -617,7 +627,6 @@ public class TickerService
     {
         throwable.printStackTrace();
     }
-
 
     //TODO: Refactor this as required
     public static String getCurrencyString(double price)

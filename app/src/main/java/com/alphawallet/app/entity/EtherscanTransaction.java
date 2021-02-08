@@ -31,8 +31,6 @@ public class EtherscanTransaction
     String gasUsed;
     int confirmations;
 
-    private static TransactionDecoder decoder = null;
-
     public Transaction createTransaction(String walletAddress, int chainId)
     {
         Transaction tx = new Transaction(hash, isError, blockNumber, timeStamp, nonce, from, to, value, gas, gasPrice, input,
@@ -40,8 +38,7 @@ public class EtherscanTransaction
 
         if (walletAddress != null)
         {
-            tx.completeSetup(walletAddress);
-            if (!walletInvolvedInTransaction(tx, walletAddress))
+            if (!tx.getWalletInvolvedInTransaction(walletAddress))
             {
                 tx = null;
             }
@@ -49,22 +46,6 @@ public class EtherscanTransaction
 
         return tx;
     }
-
-    private boolean walletInvolvedInTransaction(Transaction trans, String walletAddr)
-    {
-        if (decoder == null) decoder = new TransactionDecoder();
-        TransactionInput data = decoder.decodeInput(input);
-        boolean involved = false;
-        String fromAddress = VelasUtils.vlxToEth(trans.from);
-        String toAddress = VelasUtils.vlxToEth(trans.to);
-        if ((data != null && data.functionData != null) && data.containsAddress(walletAddr)) return true;
-        if (fromAddress.equalsIgnoreCase(walletAddr)) return true;
-        if (toAddress.equalsIgnoreCase(walletAddr)) return true;
-        if (input != null && input.length() > 40 && input.contains(Numeric.cleanHexPrefix(walletAddr.toLowerCase()))) return true;
-        if (trans.operations != null && trans.operations.length > 0 && trans.operations[0].walletInvolvedWithTransaction(walletAddr))
-            involved = true;
-        return involved;
-    }
-
+    
     public String getHash() { return hash; }
 }

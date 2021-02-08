@@ -88,7 +88,7 @@ public class AppSiteController implements AttributeInterface
     private final MagicLinkData magicLinkData = new MagicLinkData();
     private final TokenscriptFunction tokenscriptFunction = new TokenscriptFunction() { };
     private static Path repoDir;
-    private static String infuraKey = "da3717f25f824cc1baa32d812386d93f";
+    private static String infuraKey = "eefd2c6d065b45299d0bb3e12e81d51e";
 
     @GetMapping(value = "/apple-app-site-association", produces = "application/json")
     @ResponseBody

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Objects;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.alphawallet.app.entity.TokenManageType.DISPLAY_TOKEN;
@@ -56,6 +57,7 @@ public class TokenListAdapter extends RecyclerView.Adapter<BinderViewHolder> imp
     private ItemClickListener listener;
     protected final AssetDefinitionService assetService;
     protected final TokensService tokensService;
+    private Disposable disposable;
 
     int hiddenTokensCount = 0;
     int popularTokensCount = 0;
@@ -122,7 +124,7 @@ public class TokenListAdapter extends RecyclerView.Adapter<BinderViewHolder> imp
          */
         unknownTokenList = Objects.requireNonNull(readContracts()).getMainNet();
 
-        setupList(tokenList);
+        setupList(tokenList, false);
     }
 
     private List<TokenCardMeta> filterTokens(List<TokenCardMeta> tokens) {
@@ -138,7 +140,7 @@ public class TokenListAdapter extends RecyclerView.Adapter<BinderViewHolder> imp
         return filteredList;
     }
 
-    private void setupList(List<TokenCardMeta> tokens)
+    private void setupList(List<TokenCardMeta> tokens, boolean forFilter)
     {
         hiddenTokensCount = 0;
         popularTokensCount = 0;
@@ -371,27 +373,35 @@ public class TokenListAdapter extends RecyclerView.Adapter<BinderViewHolder> imp
         pref.edit().putBoolean(HIDE_ZERO_BALANCE_TOKENS, isChecked).apply();
     }
 
-//    public void filter(String searchString)
-//    {
-//        tokensService.getAllTokenMetas(searchString)
-//                .subscribeOn(Schedulers.computation())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(metas -> updateList(metas, searchString), error -> { })
-//                .isDisposed();
-//    }
+    public void filter(String searchString)
+    {
+        disposable = tokensService.getAllTokenMetas(searchString)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(metas -> updateList(metas, searchString), error -> { });
+    }
 
-    public void updateList(TokenCardMeta[] metas)
+    public void updateList(TokenCardMeta[] metas, String searchString)
     {
         /*
         While setting up, when searchString is Empty, it is hard to identify whether it is from filter call or not.
         So when searchString is empty, consider it as a regular update.
          */
-        setupList(Arrays.asList(metas));
+        setupList(Arrays.asList(metas), !searchString.isEmpty());
         notifyDataSetChanged();
     }
 
     public interface ItemClickListener {
         void onItemClick(Token token, boolean enabled);
+    }
+
+    public void onDestroy()
+    {
+        if (disposable != null && !disposable.isDisposed())
+        {
+            disposable.dispose();
+            disposable = null;
+        }
     }
 
     @Override
