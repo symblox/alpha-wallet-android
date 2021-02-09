@@ -2,6 +2,7 @@ package com.alphawallet.app.entity;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.token.tools.Numeric;
@@ -43,7 +44,6 @@ public class EtherscanTransaction
                 tx = null;
             }
         }
-
         return tx;
     }
     

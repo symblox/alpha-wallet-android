@@ -22,6 +22,7 @@ import com.alphawallet.app.repository.TokenRepository;
 import com.alphawallet.app.ui.widget.adapter.AutoCompleteAddressAdapter;
 import com.alphawallet.app.util.AWEnsResolver;
 import com.alphawallet.app.util.Utils;
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.app.widget.InputAddress;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -247,8 +248,11 @@ public class ENSHandler implements Runnable
         return history;
     }
 
-    public static String matchENSOrFormat(Context ctx, String ethAddress)
+    public static String matchENSOrFormat(Context ctx, String ethAddress, int chainId)
     {
+        if (VelasUtils.isVelasNetwork(chainId)) {
+            return VelasUtils.ethToVlx(ethAddress);
+        }
         String checkSumAddr = Keys.toChecksumAddress(ethAddress);
         if (!TextUtils.isEmpty(ethAddress) && Utils.isAddressValid(ethAddress))
         {
@@ -263,8 +267,11 @@ public class ENSHandler implements Runnable
         }
     }
 
-    public static String displayAddressOrENS(Context ctx, String ethAddress)
+    public static String displayAddressOrENS(Context ctx, String ethAddress, int chainId)
     {
+        if (VelasUtils.isVelasNetwork(chainId)) {
+            return VelasUtils.ethToVlx(ethAddress);
+        }
         String returnAddress = Utils.formatAddress(ethAddress);
         if (!TextUtils.isEmpty(ethAddress) && Utils.isAddressValid(ethAddress))
         {

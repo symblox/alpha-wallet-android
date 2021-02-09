@@ -562,7 +562,7 @@ public class Token implements Parcelable, Comparable<Token>
             {
                 name = ctx.getString(R.string.contract_call);
             }
-            else if (isMyWallet(transaction.from))
+            else if (VelasUtils.isSameAddress(transaction.from, tokenWallet))
             {
                 name = ctx.getString(R.string.sent);
             }
@@ -578,10 +578,6 @@ public class Token implements Parcelable, Comparable<Token>
 
 
         return name;
-    }
-
-    private boolean isMyWallet(String from) {
-        return (from.equalsIgnoreCase(tokenWallet) || from.equalsIgnoreCase(VelasUtils.ethToVlx(tokenWallet)));
     }
 
     /* Raw string value for balance */
@@ -714,7 +710,7 @@ public class Token implements Parcelable, Comparable<Token>
     {
         if (isEthereum())
         {
-            return isMyWallet(transaction.from);
+            return VelasUtils.isSameAddress(transaction.from, tokenWallet);
         }
         else
         {
@@ -870,7 +866,7 @@ public class Token implements Parcelable, Comparable<Token>
     {
         if (isEthereum())
         {
-            return ctx.getString(R.string.operation_definition, ctx.getString(getToFromText(tx)), ENSHandler.matchENSOrFormat(ctx, getTransactionDestination(tx)));
+            return ctx.getString(R.string.operation_definition, ctx.getString(getToFromText(tx)), ENSHandler.matchENSOrFormat(ctx, getTransactionDestination(tx), tokenInfo.chainId));
         }
         else
         {
@@ -882,8 +878,7 @@ public class Token implements Parcelable, Comparable<Token>
     {
         if (isEthereum())
         {
-            if (transaction.from.equalsIgnoreCase(tokenWallet))
-            {
+            if (VelasUtils.isSameAddress(transaction.from, tokenWallet)) {
                 return transaction.to;
             }
             else
@@ -899,8 +894,7 @@ public class Token implements Parcelable, Comparable<Token>
 
     public StatusType ethereumTxImage(Transaction tx)
     {
-        return isMyWallet(tx.from) ? (tx.to.equals(tx.from) ? StatusType.SELF : StatusType.SENT)
-                : StatusType.RECEIVE;
+        return VelasUtils.isSameAddress(tx.from, tokenWallet) ? (VelasUtils.isSameAddress(tx.to, tx.from) ? StatusType.SELF : StatusType.SENT) : StatusType.RECEIVE;
     }
 
 //    public int getTxImage(Transaction transaction)

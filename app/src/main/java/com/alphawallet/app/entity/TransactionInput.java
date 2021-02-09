@@ -204,11 +204,11 @@ public class TransactionInput
                 String amount = getFirstValueScaled(ctx, t.tokenInfo.decimals);
                 String approveAddr = getFirstAddress();
                 Token approveToken = tService.getToken(tx.chainId, approveAddr);
-                approveAddr = approveToken == null ? ENSHandler.matchENSOrFormat(ctx, approveAddr) : approveToken.getShortName();
+                approveAddr = approveToken == null ? ENSHandler.matchENSOrFormat(ctx, approveAddr, t.tokenInfo.chainId) : approveToken.getShortName();
                 operation = ctx.getString(R.string.default_approve, amount, t.getSymbol(), approveAddr);
                 break;
             case TERMINATE_CONTRACT:
-                operation = ENSHandler.matchENSOrFormat(ctx, tx.to);
+                operation = ENSHandler.matchENSOrFormat(ctx, tx.to, tx.chainId);
                 break;
             case CONSTRUCTOR:
                 operation = t.getFullName();
@@ -217,11 +217,11 @@ public class TransactionInput
                 int operationResId = getOperationToFrom();
                 if (operationResId != 0)
                 {
-                    operation = ctx.getString(R.string.operation_definition, ctx.getString(operationResId), ENSHandler.matchENSOrFormat(ctx, getOperationAddress(tx, t)));
+                    operation = ctx.getString(R.string.operation_definition, ctx.getString(operationResId), ENSHandler.matchENSOrFormat(ctx, getOperationAddress(tx, t), t.tokenInfo.chainId));
                 }
                 else
                 {
-                    operation = ENSHandler.matchENSOrFormat(ctx, tx.to);
+                    operation = ENSHandler.matchENSOrFormat(ctx, tx.to, tx.chainId);
                 }
                 break;
         }

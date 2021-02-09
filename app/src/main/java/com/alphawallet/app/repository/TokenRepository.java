@@ -27,6 +27,7 @@ import com.alphawallet.app.service.TickerService;
 import com.alphawallet.app.service.TokensService;
 import com.alphawallet.app.util.AWEnsResolver;
 import com.alphawallet.app.util.Utils;
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.token.entity.MagicLinkData;
 
 import org.web3j.abi.FunctionEncoder;
@@ -880,7 +881,7 @@ public class TokenRepository implements TokenRepositoryType {
     {
         Wallet temp = new Wallet(null);
         String responseValue = callSmartContractFunction(function, address, network, temp);
-
+        Log.d("namphantest", "getContractData  responseValue: " + responseValue + "   address:" + address);
         if (TextUtils.isEmpty(responseValue))
         {
             throw new Exception("Bad contract value");
@@ -1207,6 +1208,9 @@ public class TokenRepository implements TokenRepositoryType {
     }
 
     public static byte[] createTokenTransferData(String to, BigInteger tokenAmount) {
+        if (VelasUtils.isValidVlxAddress(to)) {
+            to = VelasUtils.vlxToEth(to);
+        }
         List<Type> params = Arrays.asList(new Address(to), new Uint256(tokenAmount));
         List<TypeReference<?>> returnTypes = Collections.singletonList(new TypeReference<Bool>() {});
         Function function = new Function("transfer", params, returnTypes);

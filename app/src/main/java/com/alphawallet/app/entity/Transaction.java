@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.tokens.Token;
@@ -233,19 +234,22 @@ public class Transaction implements Parcelable
 	{
 		if (contractAddress.equals("eth"))
 		{
-			return (input.equals("0x") || VelasUtils.isSameAddress(from, walletAddress));
+			return (input.equals("0x") || VelasUtils.isMyWallet(from, walletAddress));
 		}
-		else if (walletAddress.equalsIgnoreCase(contractAddress)) //transactions sent from or sent to the main currency account
+		else if (VelasUtils.isSameAddress(contractAddress, walletAddress)) //transactions sent from or sent to the main currency account
 		{
-			return VelasUtils.isSameAddress(from, walletAddress) || VelasUtils.isSameAddress(to, walletAddress);
+			return VelasUtils.isMyWallet(from, walletAddress) || VelasUtils.isMyWallet(to, walletAddress);
 		}
-		else if (to.equalsIgnoreCase(contractAddress))
-		{
-			return true;
-		}
-		else
-		{
-			return getWalletInvolvedInTransaction(walletAddress);
+		else {
+			Log.d("namphantest", "isRelated erc20 to:" + to + "  contractAddress:" + contractAddress);
+			if (VelasUtils.isSameAddress(to, contractAddress))
+			{
+				return true;
+			}
+			else
+			{
+				return getWalletInvolvedInTransaction(walletAddress);
+			}
 		}
 	}
 
@@ -512,7 +516,7 @@ public class Transaction implements Parcelable
 		}
 		else
 		{
-			return ctx.getString(R.string.operation_definition, ctx.getString(R.string.to), ENSHandler.matchENSOrFormat(ctx, to));
+			return ctx.getString(R.string.operation_definition, ctx.getString(R.string.to), ENSHandler.matchENSOrFormat(ctx, to, chainId));
 		}
 	}
 
@@ -527,9 +531,16 @@ public class Transaction implements Parcelable
 	public boolean getWalletInvolvedInTransaction(String walletAddr)
 	{
 		decodeTransactionInput(walletAddr);
+		Log.d("namphantest", "getWalletInvolvedInTransaction walletAddr:" + walletAddr + "  transactionInput:" + transactionInput + "   input:" + input);
 		if ((transactionInput != null && transactionInput.functionData != null) && transactionInput.containsAddress(walletAddr)) return true;
-		else if (from.equalsIgnoreCase(walletAddr)) return true;
-		else if (to.equalsIgnoreCase(walletAddr)) return true;
+		else if (VelasUtils.isMyWallet(from, walletAddr)) {
+			Log.d("namphantest", "getWalletInvolvedInTransaction  from");
+			return true;
+		}
+		else if (VelasUtils.isMyWallet(to, walletAddr)) {
+			Log.d("namphantest", "getWalletInvolvedInTransaction  to");
+			return true;
+		}
 		else if (input != null && input.length() > 40 && input.contains(Numeric.cleanHexPrefix(walletAddr.toLowerCase()))) return true;
 		else return false;
 	}
@@ -556,7 +567,7 @@ public class Transaction implements Parcelable
 		}
 		else
 		{
-			return from.equalsIgnoreCase(walletAddress);
+			return VelasUtils.isMyWallet(from, walletAddress);
 		}
 	}
 

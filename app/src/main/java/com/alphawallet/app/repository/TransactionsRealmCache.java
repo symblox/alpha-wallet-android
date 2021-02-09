@@ -10,6 +10,7 @@ import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.repository.entity.RealmAuxData;
 import com.alphawallet.app.repository.entity.RealmTransaction;
 import com.alphawallet.app.service.RealmManager;
+import com.alphawallet.app.util.VelasUtils;
 
 import org.web3j.protocol.core.methods.response.EthTransaction;
 
@@ -323,14 +324,19 @@ public class TransactionsRealmCache implements TransactionLocalSource {
         item.setBlockNumber(transaction.blockNumber);
         item.setTimeStamp(transaction.timeStamp);
         item.setNonce(transaction.nonce);
-        item.setFrom(transaction.from);
-        item.setTo(transaction.to);
         item.setValue(transaction.value);
         item.setGas(transaction.gas);
         item.setGasPrice(transaction.gasPrice);
         item.setInput(transaction.input);
         item.setGasUsed(transaction.gasUsed);
         item.setChainId(transaction.chainId);
+        if (VelasUtils.isVelasNetwork(transaction.chainId)) {
+            item.setFrom(VelasUtils.vlxToEth(transaction.from));
+            item.setTo(VelasUtils.vlxToEth(transaction.to));
+        } else {
+            item.setFrom(transaction.from);
+            item.setTo(transaction.to);
+        }
     }
 
     public static Transaction convert(RealmTransaction rawItem) {

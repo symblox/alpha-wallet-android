@@ -122,13 +122,7 @@ public class TransactionHolder extends BinderViewHolder<TransactionMeta> impleme
     private void setupTransactionDetail(Token token)
     {
         String detailStr = token.getTransactionDetail(getContext(), transaction, tokensService);
-        //String destinationOrContract = token.getTransactionDestination(transaction);
-        if (token.tokenInfo != null && VelasUtils.isVelasNetwork(token.tokenInfo.chainId)) {
-            address.setText(VelasUtils.ethToVlx(detailStr));
-        } else {
-            address.setText(detailStr);
-        }
-        //address.setText(detailStr);
+        address.setText(detailStr);
     }
 
     @Override

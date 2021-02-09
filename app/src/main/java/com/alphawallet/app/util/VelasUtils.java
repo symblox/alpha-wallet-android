@@ -27,7 +27,11 @@ public class VelasUtils {
     }
 
     public static boolean isMyWallet(String address, String tokenWallet) {
-        return (address.equalsIgnoreCase(tokenWallet) || address.equalsIgnoreCase(VelasUtils.ethToVlx(tokenWallet)));
+        if (TextUtils.isEmpty(address) || TextUtils.isEmpty(tokenWallet)) {
+            return false;
+        }
+        return address.equalsIgnoreCase(tokenWallet) || address.equalsIgnoreCase(VelasUtils.ethToVlx(tokenWallet)) ||
+                address.equalsIgnoreCase(VelasUtils.vlxToEth(tokenWallet));
     }
 
     public static boolean isVelasNetwork(int chainId) {

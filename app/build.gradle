@@ -35,8 +35,8 @@ android {
         }
     }
     defaultConfig {
-        versionCode 140
-        versionName "3.24.1"
+        versionCode 20201221
+        versionName "2.0.0"
 
         applicationId "io.symblox.defiwallet"
         minSdkVersion 23

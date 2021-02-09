@@ -38,17 +38,17 @@ public class EtherscanEvent
             valueBI = new BigInteger(value);
         }
 
-        String input = Numeric.toHexString(TokenRepository.createTokenTransferData(VelasUtils.vlxToEth(to), valueBI)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
+        String input = Numeric.toHexString(TokenRepository.createTokenTransferData(to, valueBI)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
 
-        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, VelasUtils.vlxToEth(from), VelasUtils.vlxToEth(contractAddress), "0", gas, gasPrice, input,
+        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, from, contractAddress, "0", gas, gasPrice, input,
                 gasUsed, networkInfo.chainId, false);
     }
 
     public Transaction createNFTTransaction(@NotNull NetworkInfo networkInfo)
     {
-        String input = Numeric.toHexString(TokenRepository.createERC721TransferFunction(VelasUtils.vlxToEth(from), VelasUtils.vlxToEth(to), VelasUtils.vlxToEth(contractAddress), BigInteger.ONE)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
+        String input = Numeric.toHexString(TokenRepository.createERC721TransferFunction(from, to, contractAddress, BigInteger.ONE)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
 
-        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, VelasUtils.vlxToEth(from), VelasUtils.vlxToEth(contractAddress), "0", gas, gasPrice, input,
+        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, from, contractAddress, "0", gas, gasPrice, input,
                 gasUsed, networkInfo.chainId, false);
     }
 }

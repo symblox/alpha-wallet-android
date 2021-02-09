@@ -86,19 +86,19 @@ public class TokenTransferData extends ActivityMeta
         {
             case "sent":
                 if (resultMap.containsKey("to"))
-                    return ctx.getString(R.string.sent_to, ENSHandler.displayAddressOrENS(ctx, resultMap.get("to").value));
+                    return ctx.getString(R.string.sent_to, ENSHandler.displayAddressOrENS(ctx, resultMap.get("to").value, chainId));
                 break;
             case "received":
                 if (resultMap.containsKey("from"))
-                    return ctx.getString(R.string.from, ENSHandler.displayAddressOrENS(ctx, resultMap.get("from").value));
+                    return ctx.getString(R.string.from, ENSHandler.displayAddressOrENS(ctx, resultMap.get("from").value, chainId));
                 break;
             case "ownerApproved":
                 if (resultMap.containsKey("spender"))
-                    return ctx.getString(R.string.approval_granted_to, ENSHandler.displayAddressOrENS(ctx, resultMap.get("spender").value));
+                    return ctx.getString(R.string.approval_granted_to, ENSHandler.displayAddressOrENS(ctx, resultMap.get("spender").value, chainId));
                 break;
             case "approvalObtained":
                 if (resultMap.containsKey("owner"))
-                    return ctx.getString(R.string.approval_obtained_from, ENSHandler.displayAddressOrENS(ctx, resultMap.get("owner").value));
+                    return ctx.getString(R.string.approval_obtained_from, ENSHandler.displayAddressOrENS(ctx, resultMap.get("owner").value, chainId));
                 break;
             default:
                 //use name of event

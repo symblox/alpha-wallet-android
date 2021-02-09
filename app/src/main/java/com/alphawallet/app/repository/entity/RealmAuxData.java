@@ -226,16 +226,16 @@ public class RealmAuxData extends RealmObject
         switch (getFunctionId())
         {
             case "sent":
-                if (resultMap.containsKey("to")) return ctx.getString(R.string.sent_to, ENSHandler.displayAddressOrENS(ctx, resultMap.get("to").value));
+                if (resultMap.containsKey("to")) return ctx.getString(R.string.sent_to, ENSHandler.displayAddressOrENS(ctx, resultMap.get("to").value, chainId));
                 break;
             case "received":
-                if (resultMap.containsKey("from")) return ctx.getString(R.string.from, ENSHandler.displayAddressOrENS(ctx, resultMap.get("from").value));
+                if (resultMap.containsKey("from")) return ctx.getString(R.string.from, ENSHandler.displayAddressOrENS(ctx, resultMap.get("from").value, chainId));
                 break;
             case "ownerApproved":
-                if (resultMap.containsKey("spender")) return ctx.getString(R.string.approval_granted_to, ENSHandler.displayAddressOrENS(ctx, resultMap.get("spender").value));
+                if (resultMap.containsKey("spender")) return ctx.getString(R.string.approval_granted_to, ENSHandler.displayAddressOrENS(ctx, resultMap.get("spender").value, chainId));
                 break;
             case "approvalObtained":
-                if (resultMap.containsKey("owner")) return ctx.getString(R.string.approval_obtained_from, ENSHandler.displayAddressOrENS(ctx, resultMap.get("owner").value));
+                if (resultMap.containsKey("owner")) return ctx.getString(R.string.approval_obtained_from, ENSHandler.displayAddressOrENS(ctx, resultMap.get("owner").value, chainId));
                 break;
             default:
                 //use name of event

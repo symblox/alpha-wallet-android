@@ -3,6 +3,7 @@ package com.alphawallet.app.widget;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -22,6 +23,7 @@ import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.repository.entity.RealmAuxData;
 import com.alphawallet.app.repository.entity.RealmTransaction;
 import com.alphawallet.app.ui.widget.adapter.ActivityAdapter;
+import com.alphawallet.app.util.VelasUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -115,8 +117,10 @@ public class ActivityHistoryList extends LinearLayout
     {
         boolean hasPending = false;
         List<ActivityMeta> metas = new ArrayList<>();
+        Log.d("namphantest", "handleRealmTransactions realmTransactions:" + realmTransactions.size());
         for (RealmTransaction item : realmTransactions)
         {
+            Log.d("namphantest", "handleRealmTransactions item.to:" + item.getTo());
             TransactionMeta tm = new TransactionMeta(item.getHash(), item.getTimeStamp(), item.getTo(), item.getChainId(), item.getBlockNumber());
             metas.add(tm);
             if (tm.isPending) hasPending = true;
@@ -152,9 +156,17 @@ public class ActivityHistoryList extends LinearLayout
 
     private RealmQuery<RealmTransaction> getContractListener(int chainId, String tokenAddress, int count)
     {
+        Log.d("namphantest", "getContractListener tokenAddress:" + tokenAddress);
         return realm.where(RealmTransaction.class)
                 .sort("timeStamp", Sort.DESCENDING)
-                .beginGroup().not().equalTo("input", "0x").and().equalTo("to", tokenAddress, Case.INSENSITIVE).endGroup()
+                .not().equalTo("input", "0x")
+                .beginGroup()
+                .equalTo("to", tokenAddress, Case.INSENSITIVE)
+                .or()
+                .equalTo("to", VelasUtils.ethToVlx(tokenAddress), Case.INSENSITIVE)
+                .endGroup()
+//                .beginGroup().not().equalTo("input", "0x").endGroup()
+//                .and().equalTo("to", tokenAddress, Case.INSENSITIVE).endGroup()
                 .equalTo("chainId", chainId)
                 .limit(count);
     }

@@ -22,6 +22,7 @@ import com.alphawallet.app.repository.entity.RealmAuxData;
 import com.alphawallet.app.repository.entity.RealmToken;
 import com.alphawallet.app.repository.entity.RealmTransaction;
 import com.alphawallet.app.repository.entity.RealmTransfer;
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.token.entity.ContractAddress;
 import com.google.gson.Gson;
 
@@ -358,6 +359,7 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
 
                 result = response.body().string();
 
+                Log.d("namphantest", "readTransactions  request:" + request.toString() + "    response:" + result);
                 if (result != null && result.length() < 80 && result.contains("No transactions found"))
                 {
                     result = "0";
@@ -652,6 +654,8 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
             response = httpClient.newCall(request).execute();
 
             result = response.body().string();
+
+            Log.d("namphantest", "erc20 readNextTxBatch, request:" + request.toString() + "  response:" + result);
             if (result != null && result.length() < 80 && result.contains("No transactions found"))
             {
                 result = "0";
@@ -917,9 +921,9 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
             Transaction tx = isNFT ? ev.createNFTTransaction(networkInfo) : ev.createTransaction(networkInfo);
             //find tx name
             String activityName = tx.getEventName(walletAddress);
-            String valueList = VALUES.replace(TO_TOKEN, ev.to).replace(FROM_TOKEN, ev.from).replace(AMOUNT_TOKEN,
+            String valueList = VALUES.replace(TO_TOKEN, VelasUtils.vlxToEth(ev.to)).replace(FROM_TOKEN, VelasUtils.vlxToEth(ev.from)).replace(AMOUNT_TOKEN,
                     (isNFT || ev.value == null) ? "1" : ev.value); //Etherscan sometimes interprets NFT transfers as FT's
-            storeTransferData(instance, tx.hash, valueList, activityName, ev.contractAddress);
+            storeTransferData(instance, tx.hash, valueList, activityName, VelasUtils.vlxToEth(ev.contractAddress));
             //ensure we have fetched the transaction for each hash
             checkTransaction(instance, tx, walletAddress, networkInfo);
         }
