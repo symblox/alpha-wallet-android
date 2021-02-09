@@ -672,8 +672,6 @@ public abstract class TokenscriptFunction
                 //now push the transaction
                 result = callSmartContractFunction(TokenRepository.getWeb3jService(contractAddress.chainId), transaction, contractAddress.address, ZERO_ADDRESS);
             }
-            android.util.Log.d("namphantest", "fetchResultFromEthereum  result: " + result);
-
             transactionResult.result = handleTransactionResult(transactionResult, transaction, result, attr, System.currentTimeMillis());
             return transactionResult;
         });

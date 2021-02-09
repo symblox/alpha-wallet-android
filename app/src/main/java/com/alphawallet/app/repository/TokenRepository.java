@@ -881,7 +881,6 @@ public class TokenRepository implements TokenRepositoryType {
     {
         Wallet temp = new Wallet(null);
         String responseValue = callSmartContractFunction(function, address, network, temp);
-        Log.d("namphantest", "getContractData  responseValue: " + responseValue + "   address:" + address);
         if (TextUtils.isEmpty(responseValue))
         {
             throw new Exception("Bad contract value");

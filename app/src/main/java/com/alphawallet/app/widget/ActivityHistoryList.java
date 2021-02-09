@@ -117,10 +117,8 @@ public class ActivityHistoryList extends LinearLayout
     {
         boolean hasPending = false;
         List<ActivityMeta> metas = new ArrayList<>();
-        Log.d("namphantest", "handleRealmTransactions realmTransactions:" + realmTransactions.size());
         for (RealmTransaction item : realmTransactions)
         {
-            Log.d("namphantest", "handleRealmTransactions item.to:" + item.getTo());
             TransactionMeta tm = new TransactionMeta(item.getHash(), item.getTimeStamp(), item.getTo(), item.getChainId(), item.getBlockNumber());
             metas.add(tm);
             if (tm.isPending) hasPending = true;
@@ -156,7 +154,6 @@ public class ActivityHistoryList extends LinearLayout
 
     private RealmQuery<RealmTransaction> getContractListener(int chainId, String tokenAddress, int count)
     {
-        Log.d("namphantest", "getContractListener tokenAddress:" + tokenAddress);
         return realm.where(RealmTransaction.class)
                 .sort("timeStamp", Sort.DESCENDING)
                 .not().equalTo("input", "0x")
@@ -165,8 +162,6 @@ public class ActivityHistoryList extends LinearLayout
                 .or()
                 .equalTo("to", VelasUtils.ethToVlx(tokenAddress), Case.INSENSITIVE)
                 .endGroup()
-//                .beginGroup().not().equalTo("input", "0x").endGroup()
-//                .and().equalTo("to", tokenAddress, Case.INSENSITIVE).endGroup()
                 .equalTo("chainId", chainId)
                 .limit(count);
     }

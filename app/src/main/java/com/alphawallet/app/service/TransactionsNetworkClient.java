@@ -359,7 +359,6 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
 
                 result = response.body().string();
 
-                Log.d("namphantest", "readTransactions  request:" + request.toString() + "    response:" + result);
                 if (result != null && result.length() < 80 && result.contains("No transactions found"))
                 {
                     result = "0";
@@ -569,7 +568,7 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
         {
             //have this token?
             RealmToken realmItem = instance.where(RealmToken.class)
-                    .equalTo("address", databaseKey(networkInfo.chainId, ev.contractAddress.toLowerCase()))
+                    .equalTo("address", databaseKey(networkInfo.chainId, ev.getContractAddress().toLowerCase()))
                     .equalTo("chainId", networkInfo.chainId)
                     .findFirst();
 
@@ -583,7 +582,7 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
                 // write token to DB - note this also fetches the balance
                 if (tokenDecimal >= 0)
                 {
-                    TokenInfo info = new TokenInfo(ev.contractAddress, ev.tokenName, ev.tokenSymbol, tokenDecimal, true, networkInfo.chainId);
+                    TokenInfo info = new TokenInfo(ev.getContractAddress(), ev.tokenName, ev.tokenSymbol, tokenDecimal, true, networkInfo.chainId);
                     Token newToken = new Token(info, BigDecimal.ZERO, 0, networkInfo.getShortName(), ContractType.ERC20);
                     newToken.setTokenWallet(walletAddress);
                     svs.storeToken(newToken);
@@ -591,13 +590,13 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
                 else
                 {
                     //unknown token
-                    svs.addUnknownTokenToCheck(new ContractAddress(networkInfo.chainId, ev.contractAddress));
+                    svs.addUnknownTokenToCheck(new ContractAddress(networkInfo.chainId, ev.getContractAddress()));
                 }
             }
             else
             {
                 //update token block read so we don't check events on this contract
-                storeLatestBlockRead(walletAddress, networkInfo.chainId, ev.contractAddress, ev.blockNumber);
+                storeLatestBlockRead(walletAddress, networkInfo.chainId, ev.getContractAddress(), ev.blockNumber);
             }
         }
     }
@@ -608,7 +607,7 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
         {
             //have this token?
             RealmToken realmItem = instance.where(RealmToken.class)
-                    .equalTo("address", databaseKey(networkInfo.chainId, ev.contractAddress.toLowerCase()))
+                    .equalTo("address", databaseKey(networkInfo.chainId, ev.getContractAddress().toLowerCase()))
                     .equalTo("chainId", networkInfo.chainId)
                     .findFirst();
 
@@ -619,7 +618,7 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
                             realmItem.getInterfaceSpec() != ContractType.ERC721_UNDETERMINED.ordinal()))
             {
                 // write token to DB - note this also fetches the balance
-                TokenInfo info = new TokenInfo(ev.contractAddress, ev.tokenName, ev.tokenSymbol, 0, true, networkInfo.chainId);
+                TokenInfo info = new TokenInfo(ev.getContractAddress(), ev.tokenName, ev.tokenSymbol, 0, true, networkInfo.chainId);
                 ERC721Token newToken = new ERC721Token(info, null, 0, networkInfo.getShortName(), ContractType.ERC721);
                 newToken.setTokenWallet(walletAddress);
                 svs.storeToken(newToken);
@@ -627,7 +626,7 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
             else
             {
                 //update token block read so we don't check events on this contract
-                storeLatestBlockRead(walletAddress, networkInfo.chainId, ev.contractAddress, ev.blockNumber);
+                storeLatestBlockRead(walletAddress, networkInfo.chainId, ev.getContractAddress(), ev.blockNumber);
             }
         }
     }
@@ -655,7 +654,6 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
 
             result = response.body().string();
 
-            Log.d("namphantest", "erc20 readNextTxBatch, request:" + request.toString() + "  response:" + result);
             if (result != null && result.length() < 80 && result.contains("No transactions found"))
             {
                 result = "0";
@@ -835,7 +833,7 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            //
         }
     }
 
@@ -921,9 +919,9 @@ public class TransactionsNetworkClient implements TransactionsNetworkClientType
             Transaction tx = isNFT ? ev.createNFTTransaction(networkInfo) : ev.createTransaction(networkInfo);
             //find tx name
             String activityName = tx.getEventName(walletAddress);
-            String valueList = VALUES.replace(TO_TOKEN, VelasUtils.vlxToEth(ev.to)).replace(FROM_TOKEN, VelasUtils.vlxToEth(ev.from)).replace(AMOUNT_TOKEN,
+            String valueList = VALUES.replace(TO_TOKEN, ev.getTo()).replace(FROM_TOKEN, ev.getFrom()).replace(AMOUNT_TOKEN,
                     (isNFT || ev.value == null) ? "1" : ev.value); //Etherscan sometimes interprets NFT transfers as FT's
-            storeTransferData(instance, tx.hash, valueList, activityName, VelasUtils.vlxToEth(ev.contractAddress));
+            storeTransferData(instance, tx.hash, valueList, activityName, ev.getContractAddress());
             //ensure we have fetched the transaction for each hash
             checkTransaction(instance, tx, walletAddress, networkInfo);
         }

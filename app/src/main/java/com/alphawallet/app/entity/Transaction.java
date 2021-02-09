@@ -238,10 +238,9 @@ public class Transaction implements Parcelable
 		}
 		else if (VelasUtils.isSameAddress(contractAddress, walletAddress)) //transactions sent from or sent to the main currency account
 		{
-			return VelasUtils.isMyWallet(from, walletAddress) || VelasUtils.isMyWallet(to, walletAddress);
+			return VelasUtils.isSameAddress(from, walletAddress) || VelasUtils.isSameAddress(to, walletAddress);
 		}
 		else {
-			Log.d("namphantest", "isRelated erc20 to:" + to + "  contractAddress:" + contractAddress);
 			if (VelasUtils.isSameAddress(to, contractAddress))
 			{
 				return true;
@@ -531,14 +530,11 @@ public class Transaction implements Parcelable
 	public boolean getWalletInvolvedInTransaction(String walletAddr)
 	{
 		decodeTransactionInput(walletAddr);
-		Log.d("namphantest", "getWalletInvolvedInTransaction walletAddr:" + walletAddr + "  transactionInput:" + transactionInput + "   input:" + input);
 		if ((transactionInput != null && transactionInput.functionData != null) && transactionInput.containsAddress(walletAddr)) return true;
-		else if (VelasUtils.isMyWallet(from, walletAddr)) {
-			Log.d("namphantest", "getWalletInvolvedInTransaction  from");
+		else if (VelasUtils.isSameAddress(from, walletAddr)) {
 			return true;
 		}
-		else if (VelasUtils.isMyWallet(to, walletAddr)) {
-			Log.d("namphantest", "getWalletInvolvedInTransaction  to");
+		else if (VelasUtils.isSameAddress(to, walletAddr)) {
 			return true;
 		}
 		else if (input != null && input.length() > 40 && input.contains(Numeric.cleanHexPrefix(walletAddr.toLowerCase()))) return true;

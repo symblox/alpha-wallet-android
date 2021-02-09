@@ -18,9 +18,9 @@ public class EtherscanEvent
     public String hash;
     public int nonce;
     String blockHash;
-    public String from;
-    public String contractAddress;
-    public String to;
+    private String from;
+    private String contractAddress;
+    private String to;
     String tokenID;
     public String value;
     public String tokenName;
@@ -30,6 +30,18 @@ public class EtherscanEvent
     String gasPrice;
     String gasUsed;
 
+    public String getFrom() {
+        return VelasUtils.vlxToEth(from);
+    }
+
+    public String getTo() {
+        return VelasUtils.vlxToEth(to);
+    }
+
+    public String getContractAddress() {
+        return VelasUtils.vlxToEth(contractAddress);
+    }
+
     public Transaction createTransaction(@NotNull NetworkInfo networkInfo)
     {
         BigInteger valueBI = BigInteger.ZERO;
@@ -38,17 +50,17 @@ public class EtherscanEvent
             valueBI = new BigInteger(value);
         }
 
-        String input = Numeric.toHexString(TokenRepository.createTokenTransferData(to, valueBI)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
+        String input = Numeric.toHexString(TokenRepository.createTokenTransferData(getTo(), valueBI)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
 
-        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, from, contractAddress, "0", gas, gasPrice, input,
+        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, getFrom(), getContractAddress(), "0", gas, gasPrice, input,
                 gasUsed, networkInfo.chainId, false);
     }
 
     public Transaction createNFTTransaction(@NotNull NetworkInfo networkInfo)
     {
-        String input = Numeric.toHexString(TokenRepository.createERC721TransferFunction(from, to, contractAddress, BigInteger.ONE)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
+        String input = Numeric.toHexString(TokenRepository.createERC721TransferFunction(getFrom(), getTo(), getContractAddress(), BigInteger.ONE)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
 
-        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, from, contractAddress, "0", gas, gasPrice, input,
+        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, getFrom(), getContractAddress(), "0", gas, gasPrice, input,
                 gasUsed, networkInfo.chainId, false);
     }
 }
