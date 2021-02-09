@@ -1,12 +1,9 @@
 package com.alphawallet.app.ui;
 
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -17,6 +14,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
 import com.alphawallet.app.entity.ContractLocator;
@@ -25,20 +25,22 @@ import com.alphawallet.app.entity.CryptoFunctions;
 import com.alphawallet.app.entity.ErrorEnvelope;
 import com.alphawallet.app.entity.NetworkInfo;
 import com.alphawallet.app.entity.QRResult;
+import com.alphawallet.app.entity.StandardFunctionInterface;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.entity.tokens.TokenInfo;
 import com.alphawallet.app.repository.EthereumNetworkBase;
 import com.alphawallet.app.repository.EthereumNetworkRepository;
+import com.alphawallet.app.ui.widget.entity.AddressReadyCallback;
 import com.alphawallet.app.ui.zxing.FullScannerFragment;
 import com.alphawallet.app.ui.zxing.QRScanningActivity;
 import com.alphawallet.app.util.QRParser;
 import com.alphawallet.app.util.Utils;
 import com.alphawallet.app.util.VelasUtils;
-import com.alphawallet.app.viewmodel.ActivityViewModel;
 import com.alphawallet.app.viewmodel.AddTokenViewModel;
 import com.alphawallet.app.viewmodel.AddTokenViewModelFactory;
 import com.alphawallet.app.widget.AWalletAlertDialog;
-import com.alphawallet.app.widget.InputAddressView;
+import com.alphawallet.app.widget.FunctionButtonBar;
+import com.alphawallet.app.widget.InputAddress;
 import com.alphawallet.app.widget.InputView;
 import com.alphawallet.token.entity.SalesOrderMalformed;
 import com.alphawallet.token.tools.ParseMagicLink;
@@ -57,8 +59,8 @@ import static com.alphawallet.app.repository.SharedPreferenceRepository.HIDE_ZER
 import static com.alphawallet.app.widget.AWalletAlertDialog.ERROR;
 import static org.web3j.crypto.WalletUtils.isValidAddress;
 
-public class AddTokenActivity extends BaseActivity implements View.OnClickListener {
-
+public class AddTokenActivity extends BaseActivity implements AddressReadyCallback, StandardFunctionInterface
+{
     @Inject
     protected AddTokenViewModelFactory addTokenViewModelFactory;
     private AddTokenViewModel viewModel;
@@ -76,7 +78,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
 
     LinearLayout progressLayout;
 
-    public InputAddressView inputAddressView;
+    public InputAddress inputAddressView;
     public InputView symbolInputView;
     public InputView decimalsInputView;
     public InputView nameInputview;
@@ -85,9 +87,9 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
     private NetworkInfo networkInfo;
     private TextView currentNetwork;
     private RelativeLayout selectNetworkLayout;
-    public TextView chainName;
     private QRResult currentResult;
     private InputView tokenType;
+    private ContractType contractType;
     private boolean zeroBalanceToken = false;
 
     private AWalletAlertDialog aDialog;
@@ -105,7 +107,6 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         symbolInputView = findViewById(R.id.input_symbol);
         decimalsInputView = findViewById(R.id.input_decimal);
         nameInputview = findViewById(R.id.input_name);
-        chainName = symbolInputView.findViewById(R.id.text_chain_name);
 
         contractAddress = getIntent().getStringExtra(C.EXTRA_CONTRACT_ADDRESS);
         currentNetwork = findViewById(R.id.current_network);
@@ -116,15 +117,18 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         selectNetworkLayout.setVisibility(View.VISIBLE);
         tokenType.setVisibility(View.GONE);
 
+        FunctionButtonBar functionBar = findViewById(R.id.layoutButtons);
+        functionBar.setupFunctions(this, new ArrayList<>(Collections.singletonList(R.string.action_save)));
+        functionBar.revealButtons();
+
         progressLayout = findViewById(R.id.layout_progress);
 
         venue = findViewById(R.id.textViewVenue);
         date = findViewById(R.id.textViewDate);
         price = findViewById(R.id.textViewPrice);
+        contractType = null;
 
         ticketLayout = findViewById(R.id.layoutTicket);
-
-        findViewById(R.id.save).setOnClickListener(this);
 
         viewModel = new ViewModelProvider(this, addTokenViewModelFactory)
                 .get(AddTokenViewModel.class);
@@ -138,7 +142,9 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         lastCheck = "";
 
         inputAddressView = findViewById(R.id.input_address_view);
-        inputAddressView.addTextChangedListener(new TextWatcher() {
+        inputAddressView.setAddressCallback(this);
+
+        inputAddressView.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -147,10 +153,10 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 //wait until we have an ethereum address
-                String check = inputAddressView.getAddress();
+                String check = inputAddressView.getInputText();
                 //process the address first
                 if (check.length() > addressLengthExpected()) {
-                    if (EthereumNetworkBase.isVelasNetwork(networkInfo.chainId) && VelasUtils.isValidVlxAddress(check)) {
+                    if (VelasUtils.isVelasNetwork(networkInfo.chainId) && VelasUtils.isValidVlxAddress(check)) {
                         check = VelasUtils.vlxToEth(check);
                     }
                     onCheck(check);
@@ -170,7 +176,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
     }
 
     private int addressLengthExpected() {
-        return EthereumNetworkBase.isVelasNetwork(networkInfo.chainId) ? 33 : 39;
+        return VelasUtils.isVelasNetwork(networkInfo.chainId) ? 33 : 39;
     }
 
     private void onTokenType(Token contractTypeToken)
@@ -183,6 +189,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
             tokenType.setVisibility(View.VISIBLE);
             String showBalance = contractTypeToken.getStringBalance() + " " + contractTypeToken.getInterfaceSpec().toString();
             tokenType.setText(showBalance);
+            contractType = contractTypeToken.getInterfaceSpec();
         }
     }
 
@@ -207,7 +214,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         super.onResume();
         if (contractAddress != null)
         {
-            if (EthereumNetworkBase.isVelasNetwork(networkInfo.chainId)) {
+            if (VelasUtils.isVelasNetwork(networkInfo.chainId)) {
                 inputAddressView.setAddress(VelasUtils.ethToVlx(contractAddress));
             } else {
                 inputAddressView.setAddress(contractAddress.toLowerCase());
@@ -266,6 +273,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
 
     private void onSaved(Token result)
     {
+        showProgress(false);
         if (result != null)
         {
             ContractLocator cr = new ContractLocator(result.getAddress(), result.tokenInfo.chainId);
@@ -278,26 +286,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
 
     private void onTokenInfo(TokenInfo tokenInfo)
     {
-        updateLayoutWithTokenInfo(tokenInfo);
-    }
-
-    private void updateLayoutWithTokenInfo(TokenInfo tokenInfo) {
-        if (EthereumNetworkBase.isVelasNetwork(tokenInfo.chainId)) {
-            inputAddressView.setAddress(VelasUtils.ethToVlx(tokenInfo.address));
-        } else {
-            inputAddressView.setAddress(tokenInfo.address);
-        }
-        symbolInputView.setText(tokenInfo.symbol);
-        decimalsInputView.setText(String.valueOf(tokenInfo.decimals));
-        nameInputview.setText(tokenInfo.getName());
-        ticketLayout.setVisibility(View.GONE);
-
-        if (chainName != null)
-        {
-            chainName.setVisibility(View.VISIBLE);
-            chainName.setText(viewModel.getNetworkInfo(tokenInfo.chainId).getShortName());
-            Utils.setChainColour(chainName, networkInfo.chainId);
-        }
+        tokenInfo.addTokenSetupPage(this, viewModel.getNetworkInfo(tokenInfo.chainId).getShortName());
     }
 
     private void onError(ErrorEnvelope errorEnvelope) {
@@ -313,12 +302,9 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.save: {
-                onSave();
-            } break;
-        }
+    public void handleClick(String action, int id)
+    {
+        onSave();
     }
 
     private void onCheck(String address)
@@ -336,29 +322,14 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         if (isValidAddress(address) && !address.equals(lastCheck))
         {
             lastCheck = address;
-            chainName.setVisibility(View.GONE);
             showProgress(true);
             viewModel.testNetworks(address, networkInfo);
         }
     }
 
-    private void onCheckVLXAddress(String address) {
-        if (!VelasUtils.isValidVlxAddress(address)) {
-            return;
-        }
-        String ethAddress = VelasUtils.vlxToEth(address);
-        if (isValidAddress(ethAddress) && !ethAddress.equals(lastCheck)) {
-            lastCheck = ethAddress;
-            chainName.setVisibility(View.GONE);
-            showProgress(true);
-            viewModel.testNetworks(ethAddress, networkInfo);
-        }
-    }
-
-    private void saveFinal()
+    private void saveFinal(String address)
     {
         boolean isValid = true;
-        String address = inputAddressView.getAddress();
         String symbol = symbolInputView.getText().toString().toLowerCase();
         String rawDecimals = decimalsInputView.getText().toString();
         String name = nameInputview.getText().toString();
@@ -384,7 +355,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         }
 
         try {
-            decimals = Integer.valueOf(rawDecimals);
+            decimals = Integer.parseInt(rawDecimals);
         } catch (NumberFormatException ex) {
             decimalsInputView.setError(getString(R.string.error_must_numeric));
             isValid = false;
@@ -395,9 +366,10 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
             isValid = false;
         }
 
-        if (isValid) {
-            viewModel.save(viewModel.getSelectedChain(), address);
-            finish();
+        if (isValid)
+        {
+            showProgress(true);
+            viewModel.save(viewModel.getSelectedChain(), address, name, symbol, decimals, contractType);
         }
     }
 
@@ -409,7 +381,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         }
         else
         {
-            saveFinal();
+            inputAddressView.getAddress(false);
         }
     }
 
@@ -425,13 +397,13 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
             aDialog.dismiss();
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
             pref.edit().putBoolean(HIDE_ZERO_BALANCE_TOKENS, false).apply();
-            saveFinal();
+            inputAddressView.getAddress(false);
         });
         aDialog.setSecondaryButtonText(R.string.action_cancel);
         aDialog.setSecondaryButtonListener(v -> {
             //don't switch on the zero balance tokens
             aDialog.dismiss();
-            saveFinal();
+            inputAddressView.getAddress(false);
         });
         aDialog.show();
     }
@@ -471,7 +443,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
             int networkId = data.getIntExtra(C.EXTRA_CHAIN_ID, 1);
             setupNetwork(networkId);
         }
-        else if (requestCode == InputAddressView.BARCODE_READER_REQUEST_CODE) {
+        else if (requestCode == C.BARCODE_READER_REQUEST_CODE) {
             switch (resultCode)
             {
                 case FullScannerFragment.SUCCESS:
@@ -525,7 +497,7 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
                             Toast.makeText(this, R.string.toast_qr_code_no_address, Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        if (EthereumNetworkBase.isVelasNetwork(networkInfo.chainId)) {
+                        if (VelasUtils.isVelasNetwork(networkInfo.chainId)) {
                             extracted_address = VelasUtils.ethToVlx(extracted_address);
                         }
                         inputAddressView.setAddress(extracted_address);
@@ -543,5 +515,11 @@ public class AddTokenActivity extends BaseActivity implements View.OnClickListen
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void addressReady(String address, String ensName)
+    {
+        saveFinal(address);
     }
 }

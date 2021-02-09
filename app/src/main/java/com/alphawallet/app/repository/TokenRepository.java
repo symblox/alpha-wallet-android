@@ -27,6 +27,7 @@ import com.alphawallet.app.service.TickerService;
 import com.alphawallet.app.service.TokensService;
 import com.alphawallet.app.util.AWEnsResolver;
 import com.alphawallet.app.util.Utils;
+import com.alphawallet.app.util.VelasUtils;
 import com.alphawallet.token.entity.MagicLinkData;
 
 import org.web3j.abi.FunctionEncoder;
@@ -290,7 +291,6 @@ public class TokenRepository implements TokenRepositoryType {
         return Single.fromCallable(() -> {
             TokenFactory tf      = new TokenFactory();
             NetworkInfo  network = ethereumNetworkRepository.getNetworkByChain(tokenInfo.chainId);
-
             //check balance before we store it
             List<BigInteger> balanceArray = null;
             BigDecimal       balance      = BigDecimal.ZERO;
@@ -440,7 +440,8 @@ public class TokenRepository implements TokenRepositoryType {
     }
 
     @Override
-    public Single<TokenInfo> update(String contractAddr, int chainId) {
+    public Single<TokenInfo> update(String contractAddr, int chainId)
+    {
         return setupTokensFromLocal(contractAddr, chainId);
     }
 
@@ -880,7 +881,6 @@ public class TokenRepository implements TokenRepositoryType {
     {
         Wallet temp = new Wallet(null);
         String responseValue = callSmartContractFunction(function, address, network, temp);
-
         if (TextUtils.isEmpty(responseValue))
         {
             throw new Exception("Bad contract value");
@@ -1207,6 +1207,9 @@ public class TokenRepository implements TokenRepositoryType {
     }
 
     public static byte[] createTokenTransferData(String to, BigInteger tokenAmount) {
+        if (VelasUtils.isValidVlxAddress(to)) {
+            to = VelasUtils.vlxToEth(to);
+        }
         List<Type> params = Arrays.asList(new Address(to), new Uint256(tokenAmount));
         List<TypeReference<?>> returnTypes = Collections.singletonList(new TypeReference<Bool>() {});
         Function function = new Function("transfer", params, returnTypes);
@@ -1224,6 +1227,16 @@ public class TokenRepository implements TokenRepositoryType {
     public static byte[] createERC721TransferFunction(String to, Token token, List<BigInteger> tokenId)
     {
         Function function = token.getTransferFunction(to, tokenId);
+        String encodedFunction = FunctionEncoder.encode(function);
+        return Numeric.hexStringToByteArray(Numeric.cleanHexPrefix(encodedFunction));
+    }
+
+    public static byte[] createERC721TransferFunction(String from, String to, String token, BigInteger tokenId)
+    {
+        List<TypeReference<?>> returnTypes = Collections.emptyList();
+        List<Type> params = Arrays.asList(new Address(from), new Address(to), new Uint256(tokenId));
+        Function function = new Function("safeTransferFrom", params, returnTypes);
+
         String encodedFunction = FunctionEncoder.encode(function);
         return Numeric.hexStringToByteArray(Numeric.cleanHexPrefix(encodedFunction));
     }
@@ -1399,15 +1412,18 @@ public class TokenRepository implements TokenRepositoryType {
     {
         ContractType returnType = ContractType.OTHER;
 
-        int responseLength = balanceResponse.length();
+        if (balanceResponse != null)
+        {
+            int responseLength = balanceResponse.length();
 
-        if (isERC875 || (responseLength > 66))
-        {
-            returnType = ContractType.ERC875;
-        }
-        else if (balanceResponse.length() == 66) //expected biginteger size in hex + 0x
-        {
-            returnType = ContractType.ERC20;
+            if (isERC875 || (responseLength > 66))
+            {
+                returnType = ContractType.ERC875;
+            }
+            else if (balanceResponse.length() == 66) //expected biginteger size in hex + 0x
+            {
+                returnType = ContractType.ERC20;
+            }
         }
 
         return returnType;

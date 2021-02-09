@@ -256,7 +256,7 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
         BinderViewHolder holder = null;
         switch (viewType) {
             case TokenHolder.VIEW_TYPE: {
-                TokenHolder tokenHolder = new TokenHolder(R.layout.item_token, parent, assetService, tokensService, realm);
+                TokenHolder tokenHolder = new TokenHolder(parent, assetService, tokensService, realm);
                 tokenHolder.setOnTokenClickListener(onTokenClickListener);
                 holder = tokenHolder;
                 break;

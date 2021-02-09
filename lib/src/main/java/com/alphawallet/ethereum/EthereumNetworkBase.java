@@ -24,15 +24,15 @@ public abstract class EthereumNetworkBase { // implements EthereumNetworkReposit
     public static final int VELAS_TESTNET_ID = 111;
     public static final int VELAS_MAINNET_ID = 106;
 
-    public static final String MAINNET_RPC_URL = "https://mainnet.infura.io/v3/da3717f25f824cc1baa32d812386d93f";
+    public static final String MAINNET_RPC_URL = "https://mainnet.infura.io/v3/eefd2c6d065b45299d0bb3e12e81d51e";
     public static final String CLASSIC_RPC_URL = "https://www.ethercluster.com/etc";
     public static final String XDAI_RPC_URL = "https://dai.poa.network";
     public static final String POA_RPC_URL = "https://core.poa.network/";
-    public static final String ROPSTEN_RPC_URL = "https://ropsten.infura.io/v3/da3717f25f824cc1baa32d812386d93f";
-    public static final String RINKEBY_RPC_URL = "https://rinkeby.infura.io/v3/da3717f25f824cc1baa32d812386d93f";
-    public static final String KOVAN_RPC_URL = "https://kovan.infura.io/v3/da3717f25f824cc1baa32d812386d93f";
+    public static final String ROPSTEN_RPC_URL = "https://ropsten.infura.io/v3/eefd2c6d065b45299d0bb3e12e81d51e";
+    public static final String RINKEBY_RPC_URL = "https://rinkeby.infura.io/v3/eefd2c6d065b45299d0bb3e12e81d51e";
+    public static final String KOVAN_RPC_URL = "https://kovan.infura.io/v3/eefd2c6d065b45299d0bb3e12e81d51e";
     public static final String SOKOL_RPC_URL = "https://sokol.poa.network";
-    public static final String GOERLI_RPC_URL = "https://goerli.infura.io/v3/da3717f25f824cc1baa32d812386d93f";
+    public static final String GOERLI_RPC_URL = "https://goerli.infura.io/v3/eefd2c6d065b45299d0bb3e12e81d51e";
     public static final String ARTIS_SIGMA1_RPC_URL = "https://rpc.sigma1.artis.network";
     public static final String ARTIS_TAU1_RPC_URL = "https://rpc.tau1.artis.network";
     public static final String BINANCE_TEST_RPC_URL = "https://data-seed-prebsc-1-s3.binance.org:8545";
@@ -65,8 +65,8 @@ public abstract class EthereumNetworkBase { // implements EthereumNetworkReposit
                     GOERLI_ID, false));
             put(ARTIS_TAU1_ID, new NetworkInfo("ARTIS tau1 (Test)", "ATS", ARTIS_TAU1_RPC_URL, "https://explorer.tau1.artis.network/tx/",
                     ARTIS_TAU1_ID, false));
-            put(BINANCE_TEST_ID, new NetworkInfo("Binance (Test)", "BNB", BINANCE_TEST_RPC_URL, "https://explorer.binance.org/smart-testnet/tx/",
-                    BINANCE_TEST_ID, false));
+            put(BINANCE_TEST_ID, new NetworkInfo("BSC TestNet (Test)", "BNB", BINANCE_TEST_RPC_URL, "https://explorer.binance.org/smart-testnet/tx/",
+                    ARTIS_TAU1_ID, false));
             put(BINANCE_MAIN_ID, new NetworkInfo("Binance", "BNB", BINANCE_MAIN_RPC_URL, "https://explorer.binance.org/smart/tx/",
                     BINANCE_MAIN_ID, false));
             put(VELAS_MAINNET_ID, new NetworkInfo("Velas", "VLX", VELAS_MAIN_RPC_URL, "https://explorer.velas.com/",
@@ -78,5 +78,34 @@ public abstract class EthereumNetworkBase { // implements EthereumNetworkReposit
 
     public static NetworkInfo getNetworkByChain(int chainId) {
         return networkMap.get(chainId);
+    }
+
+
+    public static String getShortChainName(int chainId)
+    {
+        NetworkInfo info = networkMap.get(chainId);
+        if (info != null)
+        {
+            int index = info.name.indexOf(" (Test)");
+            if (index > 0) return info.name.substring(0, index);
+            return info.name;
+        }
+        else
+        {
+            return networkMap.get(1).name;
+        }
+    }
+
+    public static String getChainSymbol(int chainId)
+    {
+        NetworkInfo info = networkMap.get(chainId);
+        if (info != null)
+        {
+            return info.symbol;
+        }
+        else
+        {
+            return networkMap.get(0).symbol;
+        }
     }
 }

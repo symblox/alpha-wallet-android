@@ -345,6 +345,13 @@ public class TokensService
         else return "";
     }
 
+    public String getNetworkSymbol(int chainId)
+    {
+        NetworkInfo info = ethereumNetworkRepository.getNetworkByChain(chainId);
+        if (info == null) { info = ethereumNetworkRepository.getNetworkByChain(VELAS_MAINNET_ID); }
+        return info.symbol;
+    }
+
     public void addTokenImageUrl(int networkId, String address, String imageUrl)
     {
         tokenRepository.addImageUrl(networkId, address, imageUrl);
@@ -494,6 +501,18 @@ public class TokensService
     public Realm getRealmInstance(Wallet wallet)
     {
         return tokenRepository.getRealmInstance(wallet);
+    }
+
+    public Realm getWalletRealmInstance()
+    {
+        if (currentAddress != null)
+        {
+            return tokenRepository.getRealmInstance(new Wallet(currentAddress));
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
@@ -704,11 +723,26 @@ public class TokensService
         appHasFocus = false;
     }
 
-    public void track(String eventType, String gasSpeed)
+    /**
+     * Notify that the new gas setting widget was actually used :)
+     *
+     * @param gasSpeed
+     */
+    public void track(String gasSpeed)
     {
         AnalyticsProperties analyticsProperties = new AnalyticsProperties();
         analyticsProperties.setData(gasSpeed);
+        analyticsService.track(C.AN_USE_GAS, analyticsProperties);
+    }
 
-        analyticsService.track(eventType, analyticsProperties);
+    public Token getTokenOrBase(int chainId, String address)
+    {
+        Token token = getToken(chainId, address);
+        if (token == null)
+        {
+            token = getToken(chainId, currentAddress); // use base currency
+        }
+
+        return token;
     }
 }

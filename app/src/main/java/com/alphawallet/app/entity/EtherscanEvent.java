@@ -1,8 +1,12 @@
 package com.alphawallet.app.entity;
 
-import android.text.TextUtils;
-
+import com.alphawallet.app.repository.TokenRepository;
 import com.alphawallet.app.util.VelasUtils;
+import com.alphawallet.token.tools.Numeric;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.math.BigInteger;
 
 /**
  * Created by JB on 21/10/2020.
@@ -14,11 +18,11 @@ public class EtherscanEvent
     public String hash;
     public int nonce;
     String blockHash;
-    String from;
-    public String contractAddress;
-    String to;
+    private String from;
+    private String contractAddress;
+    private String to;
     String tokenID;
-    String value;
+    public String value;
     public String tokenName;
     public String tokenSymbol;
     public String tokenDecimal;
@@ -26,70 +30,37 @@ public class EtherscanEvent
     String gasPrice;
     String gasUsed;
 
-    public Transaction createTransaction(String walletAddress, NetworkInfo networkInfo)
-    {
-        TransactionOperation[] operations = createOperation(walletAddress);
-
-        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, from, contractAddress, "0", gas, gasPrice, "0x",
-                gasUsed, networkInfo.chainId, operations);
+    public String getFrom() {
+        return VelasUtils.vlxToEth(from);
     }
 
-    private TransactionOperation[] createOperation(String walletAddress)
-    {
-        TransactionOperation[] o = generateOp();
-        TransactionOperation op = o[0];
-        op.from = from;
-        op.to = to;
-        if (!TextUtils.isEmpty(value) && !value.equals("null"))
-        {
-            op.value = value;
-        }
-        else
-        {
-            op.value = tokenID;
-            if (tokenID.length() > 10)
-            {
-                op.value = "1";
-            }
-        }
-        op.contract.address = contractAddress;
-        if (VelasUtils.isSameAddress(from, walletAddress))
-        {
-            setName(o, TransactionType.TRANSFER_TO);
-        }
-        else
-        {
-            setName(o, TransactionType.RECEIVED);
-        }
-
-        op.transactionId = hash;
-        return o;
+    public String getTo() {
+        return VelasUtils.vlxToEth(to);
     }
 
-    private TransactionOperation[] generateOp()
-    {
-        TransactionOperation[] o = new TransactionOperation[1];
-        TransactionOperation op = new TransactionOperation();
-        TransactionContract ct = new TransactionContract();
-        o[0] = op;
-        op.contract = ct;
-        return o;
+    public String getContractAddress() {
+        return VelasUtils.vlxToEth(contractAddress);
     }
 
-    private void setName(TransactionOperation[] o, TransactionType name)
+    public Transaction createTransaction(@NotNull NetworkInfo networkInfo)
     {
-        if (o.length > 0 && o[0] != null)
+        BigInteger valueBI = BigInteger.ZERO;
+        if (value != null && value.length() > 0 && Character.isDigit(value.charAt(0)))
         {
-            TransactionOperation op = o[0];
-            TransactionContract ct = op.contract;
-            if (ct instanceof ERC875ContractTransaction)
-            {
-                ((ERC875ContractTransaction) ct).operation = name;
-            }
-            else
-            {
-                op.contract.name = "*" + String.valueOf(name.ordinal());
-            }
+            valueBI = new BigInteger(value);
         }
+
+        String input = Numeric.toHexString(TokenRepository.createTokenTransferData(getTo(), valueBI)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
+
+        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, getFrom(), getContractAddress(), "0", gas, gasPrice, input,
+                gasUsed, networkInfo.chainId, false);
+    }
+
+    public Transaction createNFTTransaction(@NotNull NetworkInfo networkInfo)
+    {
+        String input = Numeric.toHexString(TokenRepository.createERC721TransferFunction(getFrom(), getTo(), getContractAddress(), BigInteger.ONE)); //write the input to the transaction to ensure this is correctly handled elsewhere in the wallet
+
+        return new Transaction(hash, "0", blockNumber, timeStamp, nonce, getFrom(), getContractAddress(), "0", gas, gasPrice, input,
+                gasUsed, networkInfo.chainId, false);
     }
 }

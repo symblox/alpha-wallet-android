@@ -1,15 +1,9 @@
 package com.alphawallet.app.ui;
 
 import android.Manifest;
-
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,33 +15,33 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
-import com.alphawallet.app.entity.AmountUpdateCallback;
+import com.alphawallet.app.entity.CustomViewSettings;
 import com.alphawallet.app.entity.EIP681Request;
 import com.alphawallet.app.entity.NetworkInfo;
-
-import com.alphawallet.app.entity.CustomViewSettings;
-
 import com.alphawallet.app.entity.Wallet;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.repository.EthereumNetworkBase;
 import com.alphawallet.app.repository.EthereumNetworkRepository;
 import com.alphawallet.app.repository.TokenRepository;
 import com.alphawallet.app.ui.QRScanning.DisplayUtils;
-import com.alphawallet.app.ui.widget.entity.AmountEntryItem;
+import com.alphawallet.app.ui.widget.entity.AmountReadyCallback;
 import com.alphawallet.app.util.AWEnsResolver;
 import com.alphawallet.app.util.KeyboardUtils;
 import com.alphawallet.app.util.QRUtils;
 import com.alphawallet.app.util.Utils;
 import com.alphawallet.app.util.VelasUtils;
-import com.alphawallet.app.viewmodel.ImportWalletViewModel;
 import com.alphawallet.app.viewmodel.MyAddressViewModel;
 import com.alphawallet.app.viewmodel.MyAddressViewModelFactory;
 import com.alphawallet.app.widget.CopyTextView;
+import com.alphawallet.app.widget.InputAmount;
 
 import org.web3j.crypto.Keys;
-import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
 
@@ -57,7 +51,7 @@ import dagger.android.AndroidInjection;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class MyAddressActivity extends BaseActivity implements AmountUpdateCallback
+public class MyAddressActivity extends BaseActivity implements AmountReadyCallback
 {
     public static final String KEY_ADDRESS = "key_address";
     public static final String KEY_MODE = "mode";
@@ -77,12 +71,11 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
     private ImageView qrImageView;
     private TextView titleView;
     private TextView address;
-    private LinearLayout inputAmount;
+    private LinearLayout layoutInputAmount;
     private LinearLayout selectAddress;
     private TextView currentNetwork;
     private RelativeLayout selectNetworkLayout;
     private View networkIcon;
-    private AmountEntryItem amountInput = null;
     private NetworkInfo networkInfo;
     private int currentMode = MODE_ADDRESS;
     private int overrideNetwork;
@@ -90,6 +83,8 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
     private CopyTextView copyAddress;
     private CopyTextView copyWalletName;
     private ProgressBar ensFetchProgressBar;
+
+    private InputAmount amountInput;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -130,7 +125,7 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
         currentNetwork = findViewById(R.id.current_network);
         selectNetworkLayout = findViewById(R.id.select_network_layout);
         selectNetworkLayout.setOnClickListener(v -> selectNetwork());
-        inputAmount = findViewById(R.id.layout_define_request);
+        layoutInputAmount = findViewById(R.id.layout_define_request);
         selectAddress = findViewById(R.id.layout_select_address);
         address =  findViewById(R.id.address);
         qrImageView = findViewById(R.id.qr_image);
@@ -178,7 +173,7 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
     public void onDestroy()
     {
         super.onDestroy();
-        if (amountInput != null) amountInput.onClear();
+        if (amountInput != null) amountInput.onDestroy();
     }
 
     @Override
@@ -212,17 +207,17 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId())
+        if (item.getItemId() == R.id.action_receive_payment)
         {
-            case R.id.action_receive_payment:
-                showPointOfSaleMode();
-                break;
-            case R.id.action_show_contract:
-                showContract();
-                break;
-            case R.id.action_my_address:
-                showAddress();
-                break;
+            showPointOfSaleMode();
+        }
+        else if (item.getItemId() == R.id.action_show_contract)
+        {
+            showContract();
+        }
+        else if (item.getItemId() == R.id.action_my_address)
+        {
+            showAddress();
         }
 
         return super.onOptionsItemSelected(item);
@@ -242,16 +237,14 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
         titleView.setVisibility(View.VISIBLE);
         displayAddress = vlxAddress(wallet.address);
         networkInfo = viewModel.getEthereumNetworkRepository().getNetworkByChain(overrideNetwork);
-        if (token == null) token = viewModel.getEthereumNetworkRepository().getBlankOverrideToken(networkInfo);
+        if (token == null) token = viewModel.getTokenService().getToken(networkInfo.chainId, wallet.address);
         currentMode = MODE_POS;
         address.setVisibility(View.GONE);
         selectAddress.setVisibility(View.GONE);
-        inputAmount.setVisibility(View.VISIBLE);
-        amountInput = new AmountEntryItem(
-                this,
-                viewModel.getTokenRepository(),
-                token);
-        amountInput.getValue();
+        layoutInputAmount.setVisibility(View.VISIBLE);
+        amountInput = findViewById(R.id.input_amount);
+        amountInput.setupToken(token, null, viewModel.getTokenService(), this);
+        updateCryptoAmount(BigDecimal.ZERO);
         selectNetworkLayout.setVisibility(View.VISIBLE);
 
         if (networkInfo != null)
@@ -263,8 +256,8 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
 
     private String vlxAddress(String address) {
         if (!TextUtils.isEmpty(address)) {
-            if ((networkInfo != null && EthereumNetworkBase.isVelasNetwork(networkInfo.chainId)) ||
-                    (token != null && token.tokenInfo != null && EthereumNetworkBase.isVelasNetwork(token.tokenInfo.chainId))) {
+            if ((networkInfo != null && VelasUtils.isVelasNetwork(networkInfo.chainId)) ||
+                    (token != null && token.tokenInfo != null && VelasUtils.isVelasNetwork(token.tokenInfo.chainId))) {
                 return VelasUtils.ethToVlx(Keys.toChecksumAddress(address));
             }
         }
@@ -283,7 +276,7 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
 
         if (amountInput != null)
         {
-            amountInput.onClear();
+            amountInput.onDestroy();
             amountInput = null;
         }
 
@@ -402,7 +395,7 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
             }
             else
             {
-                amountInput.getValue();
+                amountInput.setupToken(token, null, viewModel.getTokenService(), this);
             }
         }
     }
@@ -427,13 +420,18 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
     }
 
     @Override
-    public void amountChanged(String newAmount)
+    public void amountReady(BigDecimal value, BigDecimal gasFee)
     {
-        if (token != null && newAmount != null && newAmount.length() > 0 && Character.isDigit(newAmount.charAt(0)))
+        // unimplemented
+    }
+
+    @Override
+    public void updateCryptoAmount(BigDecimal weiAmount)
+    {
+        if (token != null)
         {
             //generate payment request link
             //EIP681 format
-            BigDecimal weiAmount = Convert.toWei(newAmount.replace(",", "."), Convert.Unit.ETHER);
             System.out.println("AMT: " + weiAmount.toString());
             EIP681Request request;
             String eip681String;
@@ -444,7 +442,6 @@ public class MyAddressActivity extends BaseActivity implements AmountUpdateCallb
             }
             else if (token.isERC20())
             {
-                weiAmount = token.getCorrectedAmount(newAmount);
                 request = new EIP681Request(displayAddress, token.getAddress(), networkInfo.chainId, weiAmount);
                 eip681String = request.generateERC20Request();
             }

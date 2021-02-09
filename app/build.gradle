@@ -44,9 +44,9 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         def XInfuraAPI = "XInfuraAPI"
         //Put your Infura key here, NB with over 30 - 40 users this API key will rate limit, it's only here for bootstrapping a free build
-        def DEFAULT_INFURA_API_KEY = "\"da3717f25f824cc1baa32d812386d93f\"";
+        def DEFAULT_INFURA_API_KEY = "\"eefd2c6d065b45299d0bb3e12e81d51e\"";
 
-        buildConfigField 'int', 'DB_VERSION', '15'
+        buildConfigField 'int', 'DB_VERSION', '22'
         buildConfigField "String", XInfuraAPI, DEFAULT_INFURA_API_KEY
 
         ndk {
@@ -107,7 +107,7 @@ android {
             apply plugin: 'com.google.gms.google-services'
             apply plugin: 'com.google.firebase.crashlytics'
             dependencies {
-                implementation 'com.google.firebase:firebase-analytics:18.0.0'
+                implementation 'com.google.firebase:firebase-analytics:18.0.2'
                 implementation 'com.mixpanel.android:mixpanel-android:5.8.4'
             }
         }
@@ -135,7 +135,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:4.3.1"
     implementation "com.google.code.gson:gson:2.8.6"
     implementation "com.squareup.picasso:picasso:2.71828"
-    implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     //noinspection GradleCompatible
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -192,8 +192,7 @@ dependencies {
     androidTestImplementation('tools.fastlane:screengrab:1.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
-    implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.1'
 
     implementation "com.trustwallet:wallet-core:0.12.31"
 

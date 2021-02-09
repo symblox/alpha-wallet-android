@@ -120,7 +120,7 @@ public class TokenManagementActivity extends BaseActivity implements TokenListAd
                 tokenList.setAdapter(adapter);
                 startRealmListener(wallet);
             } else {
-                adapter.updateList(filterTokenCards);
+                adapter.updateList(filterTokenCards, "");
             }
         }
     }
@@ -193,8 +193,10 @@ public class TokenManagementActivity extends BaseActivity implements TokenListAd
         super.onBackPressed();
     }
 
-    private void startRealmListener(Wallet wallet) {
-        if (realmId == null || !realmId.equals(wallet.address)) {
+    private void startRealmListener(Wallet wallet)
+    {
+        if (realmId == null || !realmId.equalsIgnoreCase(wallet.address))
+        {
             realmId = wallet.address;
             realm = viewModel.getRealmInstance(wallet);
             setRealmListener();
@@ -224,6 +226,15 @@ public class TokenManagementActivity extends BaseActivity implements TokenListAd
                 adapter.addToken(meta);
             }
         });
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        if (realmUpdates != null) realmUpdates.removeAllChangeListeners();
+        if (realm != null) realm.close();
+        adapter.onDestroy();
+        super.onDestroy();
     }
 
 }

@@ -91,10 +91,15 @@ public class AddTokenViewModel extends BaseViewModel {
         this.tokensService = tokensService;
     }
 
-    public void save(int chainId, String address)
+    public void save(int chainId, String address, String name, String symbol, int decimals, ContractType contractType)
     {
-        tokensService.track(C.AN_ADD_CUSTOM, address);
-        tokensService.addUnknownTokenToCheck(new ContractAddress(chainId, address));
+        //update token details as entered
+        TokenInfo tf = new TokenInfo(address, name, symbol, decimals, true, chainId);
+        addTokenInteract.add(tf, contractType, wallet.getValue())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result::postValue, this::onError)
+                .isDisposed();
     }
 
     @Override
