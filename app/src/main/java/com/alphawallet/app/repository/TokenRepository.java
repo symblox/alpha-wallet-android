@@ -472,6 +472,7 @@ public class TokenRepository implements TokenRepositoryType {
                             balanceArray = getBalanceArray721Ticket(wallet, chainId, tokenAddress);
                             break;
                         case ERC20:
+                        case DYNAMIC_CONTRACT:
                             balance = checkUint256Balance(wallet, chainId, tokenAddress);
                             break;
                         case NOT_SET:
@@ -545,6 +546,7 @@ public class TokenRepository implements TokenRepositoryType {
 
                 switch (interfaceSpec)
                 {
+                    case DYNAMIC_CONTRACT:
                     case ETHEREUM:
                         balance = getEthBalance(wallet, tInfo.chainId);
                         break;

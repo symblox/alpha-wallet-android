@@ -27,6 +27,7 @@ import com.alphawallet.app.ui.widget.entity.ENSHandler;
 import com.alphawallet.app.ui.widget.entity.ItemClickListener;
 import com.alphawallet.app.ui.zxing.QRScanningActivity;
 import com.alphawallet.app.util.KeyboardUtils;
+import com.alphawallet.app.util.VelasUtils;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static org.web3j.crypto.WalletUtils.isValidAddress;
@@ -255,7 +256,7 @@ public class InputAddress extends RelativeLayout implements ItemClickListener, E
         //determine which is which
         String address = null;
         String ensName = null;
-        String mainText = editText.getText().toString().trim();
+        String mainText = VelasUtils.vlxToEth(editText.getText().toString().trim());
         String status = statusText.getText().toString().trim();
 
         if (!TextUtils.isEmpty(mainText) && isValidAddress(mainText))

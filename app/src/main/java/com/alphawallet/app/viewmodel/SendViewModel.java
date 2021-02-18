@@ -11,6 +11,7 @@ import com.alphawallet.app.C;
 import com.alphawallet.app.entity.AnalyticsProperties;
 import com.alphawallet.app.entity.ErrorEnvelope;
 import com.alphawallet.app.entity.NetworkInfo;
+import com.alphawallet.app.entity.Operation;
 import com.alphawallet.app.entity.SignAuthenticationCallback;
 import com.alphawallet.app.entity.TransactionData;
 import com.alphawallet.app.entity.Wallet;
@@ -165,6 +166,10 @@ public class SendViewModel extends BaseViewModel {
     public void getAuthentication(Activity activity, Wallet wallet, SignAuthenticationCallback callback)
     {
         keyService.getAuthenticationForSignature(wallet, activity, callback);
+    }
+
+    public void authenticatePass(int callbackId) {
+        keyService.authenticatePass(Operation.values()[callbackId]);
     }
 
     public void sendTransaction(Web3Transaction finalTx, Wallet wallet, int chainId)
