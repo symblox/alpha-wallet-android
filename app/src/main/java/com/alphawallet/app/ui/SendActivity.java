@@ -42,6 +42,7 @@ import com.alphawallet.app.util.VelasUtils;
 import dagger.android.AndroidInjection;
 
 import com.alphawallet.app.viewmodel.SellDetailViewModel;
+import com.alphawallet.app.widget.SignTransactionDialog;
 import com.alphawallet.token.entity.SalesOrderMalformed;
 import com.alphawallet.token.tools.Convert;
 import com.alphawallet.token.tools.ParseMagicLink;
@@ -282,6 +283,9 @@ public class SendActivity extends BaseActivity implements AmountReadyCallback, S
                     ));
                     break;
             }
+        } else if (requestCode >= SignTransactionDialog.REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS && requestCode <= SignTransactionDialog.REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS + 10)
+        {
+            viewModel.authenticatePass((requestCode - SignTransactionDialog.REQUEST_CODE_CONFIRM_DEVICE_CREDENTIALS));
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }

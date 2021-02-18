@@ -197,7 +197,7 @@ public class ENSHandler implements Runnable
     public void run()
     {
         //address update delay check
-        final String to = toAddressEditText.getText().toString().trim();
+        final String to = VelasUtils.vlxToEth(toAddressEditText.getText().toString().trim());
 
         if (disposable != null && !disposable.isDisposed()) disposable.dispose();
 
