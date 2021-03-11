@@ -113,6 +113,8 @@
     {"address": "0x2de7063fe77aAFB5b401d65E5A108649Ec577170", "name": "SYX",    "isPopular": true, "network": 106},
     {"address": "0x01Db6ACFA20562Ba835aE9F5085859580A0b1386", "name": "SYX2",   "isPopular": true, "network": 106},
     {"address": "0x4b773e1aE1bAA4894E51cC1D1FAF485C91B1012F", "name": "vUSDT",  "isPopular": true, "network": 106},
-    {"address": "0x380f73bAd5E7396B260f737291AE5A8100baabcD", "name": "vWETH",  "isPopular": true, "network": 106}
+    {"address": "0x380f73bAd5E7396B260f737291AE5A8100baabcD", "name": "vWETH",  "isPopular": true, "network": 106},
+    {"address": "0xD0CB9244844F3E11061fb3Ea136Aab3a6ACAC017", "name": "SYX",  "isPopular": true, "network": 106},
+    {"address": "0xaADBAa6758fC00dEc9B43A0364a372605D8f1883", "name": "sVLX",  "isPopular": true, "network": 106}
   ]
 }
