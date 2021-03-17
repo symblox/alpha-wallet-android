@@ -419,6 +419,7 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
     private void setupMenu(View baseView)
     {
         refresh = baseView.findViewById(R.id.refresh);
+        final MenuItem gotoHomepage = toolbar.getMenu().findItem(R.id.action_goto_homepage);
         final MenuItem reload = toolbar.getMenu().findItem(R.id.action_reload);
         final MenuItem share = toolbar.getMenu().findItem(R.id.action_share);
         final MenuItem scan = toolbar.getMenu().findItem(R.id.action_scan);
@@ -426,6 +427,11 @@ public class DappBrowserFragment extends Fragment implements OnSignTransactionLi
         final MenuItem history = toolbar.getMenu().findItem(R.id.action_history);
         final MenuItem bookmarks = toolbar.getMenu().findItem(R.id.action_my_dapps);
         final MenuItem clearCache = toolbar.getMenu().findItem(R.id.action_clear_cache);
+
+        if (gotoHomepage != null) gotoHomepage.setOnMenuItemClickListener(menuItem -> {
+            homePressed();
+            return true;
+        });
 
         if (reload != null) reload.setOnMenuItemClickListener(menuItem -> {
             reloadPage();
