@@ -43,4 +43,7 @@ public interface PreferenceRepositoryType {
 
     String getVelasNodeSelected();
     void setVelasNodeSelected(String selectedNode);
+
+    void setFullScreenState(boolean state);
+    boolean getFullScreenState();
 }

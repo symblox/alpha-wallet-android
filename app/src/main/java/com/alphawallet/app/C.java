@@ -11,6 +11,7 @@ public abstract class C {
     public static final int UPDATE_LOCALE = 1013;
     public static final int UPDATE_CURRENCY = 1014;
     public static final int REQUEST_UNIVERSAL_SCAN = 1015;
+    public static final int TOKEN_SEND_ACTIVITY = 1016;
 
     public static final String VELAS_MAINNET_NETWORK_NAME = "Velas";
     public static final String VELAS_MAINNET_CHINA_NETWORK_NAME = "Velas Aux";
@@ -33,8 +34,12 @@ public abstract class C {
     public static final String ARTIS_TAU1_NETWORK = "ARTIS tau1 (Test)";
     public static final String BINANCE_TEST_NETWORK = "BSC TestNet";
     public static final String BINANCE_MAIN_NETWORK = "Binance";
+
     public static final String VELAS_TEST_NETWORK = "VELAS (Test)";
     public static final String VELAS_MAIN_NETWORK = "VELAS";
+
+    public static final String HECO_MAIN_NETWORK = "Heco";
+    public static final String HECO_TEST_NETWORK = "Heco (Test)";
 
     public static final String ETHEREUM_TICKER_NAME = "ethereum";
     public static final String CLASSIC_TICKER_NAME = "ethereum-classic";
@@ -55,8 +60,15 @@ public abstract class C {
     public static final String ARTIS_SIGMA1_SYMBOL = "ATS";
     public static final String ARTIS_TAU1_SYMBOL = "ATS";
     public static final String BINANCE_SYMBOL = "BNB";
+    public static final String HECO_SYMBOL = "HT";
 
     public static final String BURN_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+    //some important known contracts - NB must be all lower case for switch statement
+    public static final String DAI_TOKEN = "0x6b175474e89094c44da98b954eedeac495271d0f";
+    public static final String SAI_TOKEN = "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359";
+
+    public static final String XDAI_BRIDGE_DAPP = "https://bridge.xdaichain.com/";
 
     public static final String GWEI_UNIT = "Gwei";
 
@@ -103,6 +115,7 @@ public abstract class C {
     public static final String EXTRA_UNIVERSAL_SCAN = "UNIVERSAL_SCAN";
     public static final String EXTRA_NONCE = "_NONCE";
     public static final String EXTRA_TXHASH = "_TXHASH";
+    public static final String DAPP_URL_LOAD = "DAPP_URL";
 
     public static final String PRUNE_ACTIVITY =
             "com.stormbird.wallet.PRUNE_ACTIVITY";
@@ -214,5 +227,8 @@ public abstract class C {
     public static final String AN_USE_GAS = "Gas Settings";
 
     public static final String AN_CALL_ACTIONSHEET = "Use ActionSheet";
+    public static final String AN_USE_ONRAMP = "Use OnRamp";
     public static final String APP_NAME = "PACKAGE_NAME";
+
+    public static final String ALPHAWALLET_LOGO_URI = "https://alphawallet.com/wp-content/themes/alphawallet/img/alphawallet-logo.svg";
 }

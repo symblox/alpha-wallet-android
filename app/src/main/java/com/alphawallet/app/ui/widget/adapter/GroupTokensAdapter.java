@@ -297,6 +297,11 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
         holder.bind(sortedItem.value);
     }
 
+    public void onRViewRecycled(RecyclerView.ViewHolder holder)
+    {
+        ((BinderViewHolder<?>)holder).onDestroyView();
+    }
+
     @Override
     public int getItemViewType(int position) {
         SortedItem sortedItem = getItemInGroupItems(position);
@@ -636,7 +641,17 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
         return -1;
     }
 
-    public void setDebug() {
+    public void onDestroy(RecyclerView recyclerView)
+    {
+        //ensure all holders have their realm listeners cleaned up
+        for (int childCount = recyclerView.getChildCount(), i = 0; i < childCount; ++i)
+        {
+            ((BinderViewHolder<?>)recyclerView.getChildViewHolder(recyclerView.getChildAt(i))).onDestroyView();
+        }
+    }
+
+    public void setDebug()
+    {
         debugView = true;
     }
 }
