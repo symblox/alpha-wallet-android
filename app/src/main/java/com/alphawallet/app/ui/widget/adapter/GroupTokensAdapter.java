@@ -1,8 +1,10 @@
 package com.alphawallet.app.ui.widget.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.ViewGroup;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
@@ -62,6 +64,8 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
     //view types
     public static final int VIEWTYPE_BASE_ETH_SYMBLOX_LABEL = 2099;
     public static final int VIEWTYPE_BASE_ETH_MAINNET_LABEL = 20199;
+    public static final int VIEWTYPE_BASE_ETH_BINANCE_LABEL = 20299;
+    public static final int VIEWTYPE_BASE_ETH_HECO_LABEL = 20399;
     public static final int VIEWTYPE_BASE_ETH_OTHER_LABEL = 20999;
 
     protected final OnTokenClickListener onTokenClickListener;
@@ -279,6 +283,8 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
             case VIEWTYPE_BASE_ETH_MAINNET_LABEL:
             case VIEWTYPE_BASE_ETH_OTHER_LABEL:
             case VIEWTYPE_BASE_ETH_SYMBLOX_LABEL:
+            case VIEWTYPE_BASE_ETH_BINANCE_LABEL:
+            case VIEWTYPE_BASE_ETH_HECO_LABEL:
                 holder = new GroupTokensHolder(R.layout.item_group_token, parent);
                 break;
             default:
@@ -295,6 +301,11 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
         SortedItem sortedItem = getItemInGroupItems(position);
         sortedItem.view = holder;
         holder.bind(sortedItem.value);
+    }
+
+    public void onRViewRecycled(RecyclerView.ViewHolder holder)
+    {
+        ((BinderViewHolder<?>)holder).onDestroyView();
     }
 
     @Override
@@ -324,8 +335,11 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
         this.walletAddress = walletAddress;
         if (!isFinishSettingup()) {
             addManageTokensLayout();
-            addGroupToken(VIEWTYPE_BASE_ETH_SYMBLOX_LABEL, "VELAS", EthereumNetworkRepository.VELAS_MAINNET_ID, walletAddress, context.getResources().getColor(R.color.section_velas), 0);
-            addGroupToken(VIEWTYPE_BASE_ETH_MAINNET_LABEL, "ETH", EthereumNetworkRepository.MAINNET_ID, walletAddress, context.getResources().getColor(R.color.section_eth), 0);
+            addGroupToken(VIEWTYPE_BASE_ETH_SYMBLOX_LABEL, "VELAS", EthereumNetworkRepository.VELAS_MAINNET_ID, walletAddress, ContextCompat.getColor(context, R.color.section_velas)
+                    , 0);
+            addGroupToken(VIEWTYPE_BASE_ETH_MAINNET_LABEL, "ETH", EthereumNetworkRepository.MAINNET_ID, walletAddress, ContextCompat.getColor(context, R.color.section_eth), 0);
+            addGroupToken(VIEWTYPE_BASE_ETH_BINANCE_LABEL, "BINANCE", EthereumNetworkRepository.BINANCE_MAIN_ID, walletAddress, ContextCompat.getColor(context, R.color.section_binance), 0);
+            addGroupToken(VIEWTYPE_BASE_ETH_HECO_LABEL, "HECO", EthereumNetworkRepository.HECO_ID, walletAddress, ContextCompat.getColor(context, R.color.section_heco), 0);
             addGroupToken(VIEWTYPE_BASE_ETH_OTHER_LABEL, "OTHERS", -1, walletAddress, 0, 0);
         }
     }
@@ -385,9 +399,7 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
                 position++;
                 if (groupItems.get(groupIndex) instanceof GroupTokensSortedItem) {
                     GroupTokenData groupTokenData = ((GroupTokenData) groupItems.get(groupIndex).value);
-                    if ((groupTokenData.getChainId() == token.getChain()) &&
-                            (groupTokenData.getChainId() == EthereumNetworkRepository.MAINNET_ID ||
-                                    groupTokenData.getChainId() == EthereumNetworkRepository.VELAS_MAINNET_ID)) {
+                    if ((groupTokenData.getChainId() == token.getChain()) && isTokenGrouped(groupTokenData)) {
                         position += groupTokenData.getItems().add(tsi);
                         break;
                     } else if (groupTokenData.getChainId() > 0) {
@@ -402,6 +414,13 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
         } else {
             removeToken(token);
         }
+    }
+
+    private boolean isTokenGrouped(GroupTokenData groupTokenData) {
+        return (groupTokenData.getChainId() == EthereumNetworkRepository.MAINNET_ID ||
+                groupTokenData.getChainId() == EthereumNetworkRepository.VELAS_MAINNET_ID ||
+                groupTokenData.getChainId() == EthereumNetworkRepository.BINANCE_MAIN_ID ||
+                groupTokenData.getChainId() == EthereumNetworkRepository.HECO_ID);
     }
 
     private void removeMatchingTokenDifferentWeight(TokenCardMeta token) {
@@ -636,7 +655,17 @@ public class GroupTokensAdapter extends RecyclerView.Adapter<BinderViewHolder> {
         return -1;
     }
 
-    public void setDebug() {
+    public void onDestroy(RecyclerView recyclerView)
+    {
+        //ensure all holders have their realm listeners cleaned up
+        for (int childCount = recyclerView.getChildCount(), i = 0; i < childCount; ++i)
+        {
+            ((BinderViewHolder<?>)recyclerView.getChildViewHolder(recyclerView.getChildAt(i))).onDestroyView();
+        }
+    }
+
+    public void setDebug()
+    {
         debugView = true;
     }
 }

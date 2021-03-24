@@ -89,6 +89,8 @@
 	<color name="artis_tau1">#F97599</color>
 	<color name="binance_test">#ffca2f</color>
 	<color name="binance_main">#f3ba2f</color>
+	<color name="heco_test">#5F9FFF</color>
+	<color name="heco_main">#3F7FFF</color>
 
 	<!-- Fiji Colour Pallette -->
 	<color name="black">#000000</color>
@@ -155,6 +157,8 @@
 
 	<color name="section_velas">#446CC8</color>
 	<color name="section_eth">#ff9500</color>
+	<color name="section_binance">#E8BE41</color>
+	<color name="section_heco">#4CAAE9</color>
 	<color name="section_other">#8e8e93</color>
 
 </resources>

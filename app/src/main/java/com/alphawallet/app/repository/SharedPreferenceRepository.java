@@ -22,6 +22,7 @@ public class SharedPreferenceRepository implements PreferenceRepositoryType {
     private static final String CURRENCY_SYMBOL_KEY = "currency_symbol";
     public static final String USER_LOCALE_PREF = "user_locale_pref";
     public static final String HIDE_ZERO_BALANCE_TOKENS = "hide_zero_balance_tokens";
+    public static final String FULL_SCREEN_STATE = "full_screen";
 
     public static final String VELAS_NODE_SELECTED = "velas_node_selected";
 
@@ -144,5 +145,16 @@ public class SharedPreferenceRepository implements PreferenceRepositoryType {
     @Override
     public void setVelasNodeSelected(String selectedNode) {
         pref.edit().putString(VELAS_NODE_SELECTED, selectedNode).apply();
+    }
+
+    public void setFullScreenState(boolean state)
+    {
+        pref.edit().putBoolean(FULL_SCREEN_STATE, state).apply();
+    }
+
+    @Override
+    public boolean getFullScreenState()
+    {
+        return pref.getBoolean(FULL_SCREEN_STATE, false);
     }
 }
