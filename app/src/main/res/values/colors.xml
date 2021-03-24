@@ -157,6 +157,8 @@
 
 	<color name="section_velas">#446CC8</color>
 	<color name="section_eth">#ff9500</color>
+	<color name="section_binance">#E8BE41</color>
+	<color name="section_heco">#4CAAE9</color>
 	<color name="section_other">#8e8e93</color>
 
 </resources>

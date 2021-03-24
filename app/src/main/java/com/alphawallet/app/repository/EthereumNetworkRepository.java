@@ -45,6 +45,8 @@ public class EthereumNetworkRepository extends EthereumNetworkBase
         ArrayList result = new ArrayList();
         result.add(EthereumNetworkRepository.VELAS_MAINNET_ID);
         result.add(EthereumNetworkRepository.MAINNET_ID);
+        result.add(EthereumNetworkRepository.BINANCE_MAIN_ID);
+        result.add(EthereumNetworkRepository.HECO_ID);
         result.add(EthereumNetworkRepository.XDAI_ID);
         return result;
     }

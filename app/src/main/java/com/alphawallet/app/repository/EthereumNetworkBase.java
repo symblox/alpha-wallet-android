@@ -184,7 +184,7 @@ public abstract class EthereumNetworkBase implements EthereumNetworkRepositoryTy
                     BINANCE_MAIN_FALLBACK_RPC_URL,
                     "https://api.bscscan.com/"),
             new NetworkInfo(C.HECO_MAIN_NETWORK, C.HECO_SYMBOL, HECO_RPC_URL,
-                    "https://hecoinfo.com/tx/", HECO_ID, false,
+                    "https://hecoinfo.com/tx/", HECO_ID, true,
                     HECO_RPC_URL,
                     "https://api.hecoinfo.com/"),
             new NetworkInfo(C.HECO_TEST_NETWORK, C.HECO_SYMBOL, HECO_TEST_RPC_URL,
